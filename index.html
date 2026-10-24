@@ -50,6 +50,26 @@
     @media(max-width:390px){.hero-ctas{flex-direction:column}.hero-ctas .btn{width:100%}.hero-art{min-height:340px}.hero-board{width:92%}.board-phrase strong{font-size:2.2rem}.book{height:49px}.book:nth-child(2){top:58px}.book:nth-child(3){top:116px}.sticker-b{width:58px;height:58px}.team-copy .name{font-size:2.8rem}.team-points{grid-template-columns:1fr}.gallery-grid{grid-template-rows:230px 170px 170px}.cta-actions{flex-direction:column}.footer-main{grid-template-columns:1fr}.footer-main>div:first-child{grid-column:auto}}
     @keyframes menu-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal,.reveal-left{opacity:1;transform:none}}
+
+    /* CMS-managed content cards and uploaded media */
+    .brand-logo-image{width:100%;height:100%;object-fit:contain;border-radius:inherit;padding:2px;display:block}.brand-logo:has(.brand-logo-image):after{display:none}
+    .educator-real-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:inherit}
+    .portrait-panel:has(.educator-real-photo){overflow:hidden;background:var(--pink)}
+    .portrait-panel:has(.educator-real-photo):before{content:"";position:absolute;inset:12px;border:2px solid rgba(255,255,255,.48);border-radius:27px;z-index:1;pointer-events:none}
+    .portrait-panel:has(.educator-real-photo) .portrait-caption{z-index:2}
+    .extra-teachers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:26px}
+    .extra-teacher-card{display:grid;grid-template-columns:155px minmax(0,1fr);gap:20px;padding:18px;align-items:start}
+    .extra-teacher-photo{height:180px;border:2px solid var(--ink);border-radius:18px;overflow:hidden;display:grid;place-items:center;background:var(--yellow);box-shadow:4px 5px 0 var(--ink);font-weight:900;font-size:2rem}
+    .extra-teacher-photo img{width:100%;height:100%;object-fit:cover}
+    .extra-teacher-copy h3{margin-bottom:6px}.extra-teacher-copy .teacher-role{color:var(--pink);font-weight:800;margin-bottom:10px}.extra-teacher-copy>p:not(.teacher-role){color:var(--muted);line-height:1.6}
+    .extra-teacher-copy .qualifications{gap:7px}.extra-teacher-copy .qualification{font-size:.72rem;padding:6px 9px}
+    .course-card:active,.extra-teacher-card:active,.gallery-tile:active{transform:translateY(4px) rotate(0deg);box-shadow:1px 1px 0 var(--ink)}
+    .theme-yellow{background:var(--yellow)!important;color:var(--ink)!important}.theme-pink{background:var(--pink)!important;color:#fff!important}.theme-mint{background:var(--mint)!important;color:var(--ink)!important}.theme-lavender{background:var(--lav2)!important;color:var(--ink)!important}
+    .gallery-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;transition:transform .6s ease}.gallery-tile:hover .gallery-photo{transform:scale(1.06)}
+    .testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.testimonial-card{padding:25px;min-height:230px}.testimonial-stars{color:var(--pink);letter-spacing:3px;margin-bottom:14px}.testimonial-card blockquote{margin:0 0 18px;font-size:1.05rem;line-height:1.6}.testimonial-card>strong,.testimonial-card>small{display:block}.testimonial-card>small{color:var(--muted);margin-top:4px}
+    .has-map a{font-weight:800}
+    @media(max-width:760px){.extra-teachers{grid-template-columns:1fr}.extra-teacher-card{grid-template-columns:100px minmax(0,1fr);gap:14px;padding:14px}.extra-teacher-photo{height:130px}.testimonial-grid{grid-template-columns:1fr}.testimonial-card{min-height:0}}
+
   </style>
 </head>
 <body>
@@ -134,7 +154,8 @@
           <div class="portrait-panel" aria-label="Illustrated founder portrait placeholder; replace with original photo when available"><div class="portrait-orbit"></div><div class="portrait-avatar"><div class="avatar-head"></div><div class="avatar-body"></div></div><div class="portrait-caption">FOUNDER & EDUCATOR<small>EZEE VISION CHAMPUA</small></div></div>
           <div class="team-copy"><span class="eyebrow">Meet your educator</span><h3 class="name">Sayeedur Rahman<br><span class="ink-accent">(Shahid Sir)</span></h3><p class="lead">Teacher · Educational Content Creator</p><div class="qualifications"><span class="qualification">D.El.Ed.</span><span class="qualification">CTET Paper I</span><span class="qualification">OTET Paper I</span><span class="qualification">MA · Islamic History</span></div><blockquote class="quote">“My goal is not only to help students finish a syllabus, but to help them understand what they learn and feel confident using that knowledge.”</blockquote><div class="team-points"><div class="team-point"><span class="point-icon">📖</span><strong>Concept-first teaching</strong><small>Focus on understanding, not rote learning.</small></div><div class="team-point"><span class="point-icon">🧠</span><strong>Useful learning tools</strong><small>Notes, worksheets, and practice resources.</small></div></div></div>
         </article>
-        <p class="form-hint" style="text-align:center;margin-top:20px">Design prototype note: replace the illustrated portrait with your own original teacher photo before publishing.</p>
+        <div id="extraTeachers" class="extra-teachers"></div>
+        <p class="form-hint" style="text-align:center;margin-top:20px">Add real educator photos and details from the admin panel to personalise this section.</p>
       </div>
     </section>
 
@@ -152,7 +173,7 @@
       </div>
     </section>
 
-    <section class="section" style="padding-top:25px">
+    <section class="section" id="finalCta" style="padding-top:25px">
       <div class="wrap"><div class="cta-panel reveal"><div><span class="eyebrow" style="background:var(--yellow);color:var(--ink)">Your next step</span><h2>Ready to learn<br>with confidence?</h2><p class="lead">Tell us the class and subject you're looking for. We'll help you find the right learning path.</p></div><div class="cta-actions"><a class="btn btn-mint" href="#contact">Ask about admission <span class="arrow">↗</span></a><a class="btn btn-light" href="#courses">Explore learning paths <span class="arrow">→</span></a></div></div></div>
     </section>
 
@@ -183,7 +204,7 @@
 
   <script>
     // --- Editable contact settings: update this number if you use a different WhatsApp account. ---
-    const WHATSAPP_NUMBER = '918917225693';
+    window.EV_WHATSAPP_NUMBER = '918917225693';
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
     const topProgress = document.getElementById('topProgress');
@@ -246,8 +267,11 @@
       const subject = document.getElementById('studentSubject').value;
       const message = document.getElementById('studentMessage').value.trim();
       const text = `Assalamu Alaikum, EZEE VISION CHAMPUA.\n\nI would like to enquire about admission.\nName: ${name}\nClass: ${cls}\nSubject / Enquiry: ${subject}${message ? `\nMessage: ${message}` : ''}`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+      const whatsappTarget = window.EV_WHATSAPP_NUMBER;
+      if (!whatsappTarget) { alert('Please contact the coaching directly for admission enquiries.'); return; }
+      window.open(`https://wa.me/${whatsappTarget}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     });
   </script>
+  <script type="module" src="./public-cms.js"></script>
 </body>
 </html>
