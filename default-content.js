@@ -1,11 +1,16 @@
 export const defaultContent = {
   brand: { name: 'EZEE VISION', legalName: 'EZEE VISION CHAMPUA', tagline: 'CHAMPUA · LEARN & GROW', logoText: 'EV', logoUrl: '', navCta: "Let's Talk" },
   theme: { lav: '#f4efff', lav2: '#e7dcff', ink: '#201936', yellow: '#ffd600', pink: '#ff1654', mint: '#00dda7' },
-  seo: { title: 'EZEE VISION CHAMPUA — Learn with Clarity', description: 'EZEE VISION CHAMPUA — concept-focused learning, regular practice, and personal guidance for Classes 4–12.' },
+  seo: { title: 'EZEE VISION CHAMPUA — Learn with Clarity', description: 'EZEE VISION CHAMPUA — concept-focused learning, regular practice, and personal guidance for Classes 4–10.' },
   hero: {
     announcement: 'Building brighter futures, one concept at a time', headlineTop: 'Learn with clarity.', headlineLead: 'Grow with', headlineHighlight: 'confidence.',
     description: 'At EZEE VISION CHAMPUA, we make learning meaningful through strong concepts, regular practice, and guidance that helps every student move forward.',
-    ctaPrimary: 'Explore Courses', ctaPrimaryTarget: '#courses', ctaSecondary: 'Our Story', ctaSecondaryTarget: '#journey', note: 'Concept-first teaching · Classes 4–12', artLabel: 'THE EV METHOD', artSteps: [{ label: 'UNDERSTAND' }, { label: 'PRACTISE' }, { label: 'ACHIEVE' }], artEyebrow: 'OUR LEARNING PROMISE', artHeadline: 'Think. Learn.', artHighlight: 'Shine with confidence.'
+    ctaPrimary: 'Explore Courses', ctaPrimaryTarget: '#courses', ctaSecondary: 'Our Story', ctaSecondaryTarget: '#journey', note: 'Concept-first teaching · Classes 4–12', artLabel: 'THE EV METHOD', artSteps: [{ label: 'UNDERSTAND' }, { label: 'PRACTISE' }, { label: 'ACHIEVE' }], artEyebrow: 'OUR LEARNING PROMISE', artHeadline: 'Think. Learn.', artHighlight: 'Shine with confidence.', previewCards: [
+      { kicker: 'PRACTICE RESOURCE', title: 'Daily Practice Papers', description: 'Build consistency, one question at a time.', icon: '📝', imageUrl: '', theme: 'yellow' },
+      { kicker: 'CLEAR NOTES', title: 'Handwritten Notes', description: 'Structured notes for more confident revision.', icon: '📒', imageUrl: '', theme: 'mint' },
+      { kicker: 'CONCEPT FIRST', title: 'Understand the why', description: 'Simple explanations, stronger foundations.', icon: '💡', imageUrl: '', theme: 'pink' },
+      { kicker: 'LEARNING TOOLS', title: 'Worksheets & Resources', description: 'Useful practice beyond classroom time.', icon: '📚', imageUrl: '', theme: 'lavender' }
+    ]
   },
   marquee: { items: ['STRONG CONCEPTS', 'DAILY PRACTICE', 'PERSONAL GUIDANCE', 'CONFIDENT LEARNERS'] },
   courses: [
@@ -44,11 +49,7 @@ export const defaultContent = {
       { icon: '🧠', title: 'Useful learning tools', description: 'Notes, worksheets, and practice resources.' }
     ]
   },
-  teachers: [
-    { name: '', displayName: '', role: '', badge: 'EDUCATOR', photoUrl: '', qualifications: [], bio: '', quote: '' },
-    { name: '', displayName: '', role: '', badge: 'EDUCATOR', photoUrl: '', qualifications: [], bio: '', quote: '' },
-    { name: '', displayName: '', role: '', badge: 'EDUCATOR', photoUrl: '', qualifications: [], bio: '', quote: '' }
-  ],
+  teachers: [],
   gallery: {
     eyebrow: 'Inside the learning journey', titleLead: 'Real effort.', titleHighlight: 'Real growth.',
     description: 'A glimpse of the learning culture—classroom moments, practice work, notes, and the small steps that build progress.',
@@ -61,9 +62,9 @@ export const defaultContent = {
     ]
   },
   testimonials: { eyebrow: 'Words from our learning community', title: 'Experiences that matter', items: [] },
-  cta: { eyebrow: 'Your next step', headlineTop: 'Ready to learn', headlineBottom: 'with confidence?', description: 'Tell us the class and subject you are looking for. We will help you find the right learning path.', primaryLabel: 'Ask about classes', secondaryLabel: 'View courses' },
+  cta: { eyebrow: 'Your next step', headlineTop: 'Ready to learn', headlineBottom: 'with confidence?', description: 'Tell us the class and subject you are looking for. We will help you find the right learning path.', primaryLabel: 'Ask about admission', secondaryLabel: 'Explore learning paths' },
   contact: {
-    whatsapp: '918917225693', phone1: '7749916815', phone2: '9124478453', address: 'Opposite to Swagat Guest House, Champua Odisha', email: '', mapsUrl: 'https://maps.app.goo.gl/FUeyNMJJxYswrFpR8', messageGreeting: 'Hello Sir',
+    whatsapp: '918917225693', phone1: '7749916815', phone2: '9124478453', address: 'Jamudalak, Champua, Odisha', email: '', mapsUrl: '',
     titleLead: 'Every strong journey starts with a', titleHighlight: 'conversation.',
     description: 'For batch details, class availability, or admission enquiries, get in touch with EZEE VISION CHAMPUA.',
     footerSummary: 'Leading with care, teaching with purpose, and helping students build a strong foundation for the future.', footerSignature: 'Made with ♥ for curious minds · Shahid Sir',

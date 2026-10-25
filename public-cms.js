@@ -39,18 +39,11 @@ function deepMergeDefaults(data, defaults) {
 function normalizeContent(data) {
   const c = deepMergeDefaults(data || {}, defaultContent);
   // Upgrade only unchanged older default values; preserve genuinely customised content.
-  const legacyStory = [
-    { kicker: 'The beginning', title: 'A purpose beyond the classroom', description: 'A coaching journey built around helping learners understand their subjects, ask questions freely, and build a stronger academic foundation.' },
-    { kicker: 'The teaching approach', title: 'Make every concept count', description: 'Step-by-step explanations, relatable examples, revision, and regular practice become part of the learning routine.' },
-    { kicker: 'Creating learning tools', title: 'Practice that continues at home', description: 'Worksheets, handwritten notes, Daily Practice Papers, and digital teaching resources support students beyond class time.' },
-    { kicker: 'The vision ahead', title: 'A trusted learning community', description: 'Keep improving the learning experience with thoughtful teaching, useful resources, and personal attention to student growth.' }
-  ];
+  const legacyStoryTitles = ['A purpose beyond the classroom','Make every concept count','Practice that continues at home','A trusted learning community'];
   const oldStory = data?.story?.timeline;
-  if (Array.isArray(oldStory) && oldStory.length === legacyStory.length && oldStory.every((item, i) => legacyStory[i].kicker === item?.kicker && legacyStory[i].title === item?.title && legacyStory[i].description === item?.description)) c.story.timeline = defaultContent.story.timeline;
+  if (Array.isArray(oldStory) && oldStory.length === 4 && oldStory.every((item, i) => item?.title === legacyStoryTitles[i])) c.story.timeline = defaultContent.story.timeline;
   if (data?.story?.description === 'EZEE VISION CHAMPUA is shaped by a simple belief: when concepts become clear and students get consistent support, confidence follows.') c.story.description = defaultContent.story.description;
   if (data?.hero?.note === 'Concept-first teaching · Classes 4–10') c.hero.note = defaultContent.hero.note;
-  if (data?.cta?.primaryLabel === 'Ask about admission') c.cta.primaryLabel = defaultContent.cta.primaryLabel;
-  if (data?.cta?.secondaryLabel === 'Explore learning paths') c.cta.secondaryLabel = defaultContent.cta.secondaryLabel;
   const oldClasses = ['Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10','Other / General enquiry'];
   if (Array.isArray(data?.contact?.classOptions) && JSON.stringify(data.contact.classOptions) === JSON.stringify(oldClasses)) c.contact.classOptions = [...defaultContent.contact.classOptions];
   if (!data?.contact?.mapsUrl && (!data?.contact?.address || data.contact.address === 'Jamudalak, Champua, Odisha')) {
@@ -59,8 +52,6 @@ function normalizeContent(data) {
   }
   if (!c.educator.badge) c.educator.badge = 'FOUNDER & EDUCATOR';
   if (!c.contact.messageGreeting) c.contact.messageGreeting = 'Hello Sir';
-  if (!Array.isArray(c.teachers)) c.teachers = [];
-  while (c.teachers.length < 3) c.teachers.push(JSON.parse(JSON.stringify(defaultContent.teachers[c.teachers.length])));
   return c;
 }
 
@@ -102,7 +93,14 @@ function renderSite(data) {
   const artHeadline = $('#heroArtHeadline'); if (artHeadline) artHeadline.textContent = c.hero?.artHeadline || 'Think. Learn.';
   const artHighlight = $('#heroArtHighlight'); if (artHighlight) artHighlight.textContent = c.hero?.artHighlight || 'Shine with confidence.';
   const artSteps = $('#heroArtSteps');
-  if (artSteps) artSteps.innerHTML = (c.hero?.artSteps || [{label:'UNDERSTAND'},{label:'PRACTISE'},{label:'ACHIEVE'}]).slice(0,4).map((step,i) => `<div class="book">${esc(step.label || `STEP ${i+1}`)}</div>`).join('');
+  if (artSteps) artSteps.innerHTML = (c.hero?.artSteps || [{label:'UNDERSTAND'},{label:'PRACTISE'},{label:'ACHIEVE'}]).slice(0,4).map((step,i) => `<span class="hero-step-chip">${esc(step.label || `STEP ${i+1}`)}</span>`).join('');
+  const heroPreviewTrack = $('#heroPreviewTrack');
+  const heroPreviewCards = Array.isArray(c.hero?.previewCards) && c.hero.previewCards.length ? c.hero.previewCards : (defaultContent.hero?.previewCards || []);
+  if (heroPreviewTrack) {
+    const previewThemes = {yellow:'theme-yellow',pink:'theme-pink',mint:'theme-mint',lavender:'theme-lavender',white:''};
+    heroPreviewTrack.innerHTML = heroPreviewCards.map((card,i) => `<article class="hero-preview-slide ${previewThemes[card.theme] || ''}" role="group" aria-roledescription="slide" aria-label="Learning preview ${i+1} of ${heroPreviewCards.length}"><div class="hero-preview-media">${card.imageUrl ? `<img src="${esc(safeUrl(card.imageUrl))}" alt="${esc(card.title || 'Learning resource thumbnail')}" loading="lazy">` : `<span class="hero-preview-icon" aria-hidden="true">${esc(card.icon || '📘')}</span>`}</div><div class="hero-preview-copy"><span class="hero-preview-kicker">${esc(card.kicker || 'EZEE VISION LEARNING')}</span><h3>${esc(card.title || 'Learning resource')}</h3><p>${esc(card.description || '')}</p></div></article>`).join('');
+    setupCarousel('heroPreview', $('#heroPreviewCarousel'), heroPreviewTrack, $('#heroPreviewDots'), 9500);
+  }
 
   const coursesSection = $('#courses');
   const coursesGrid = $('#courses .grid-3');
@@ -139,7 +137,7 @@ function renderSite(data) {
   const educatorTrack = $('#educatorCarouselTrack');
   if (educatorTrack) {
     const founder = { ...(c.educator || {}), displayName: c.educator?.displayName || '', badge: c.educator?.badge || 'FOUNDER & EDUCATOR', primary: true };
-    const profiles = [founder, ...(Array.isArray(c.teachers) ? c.teachers : []).map(t => ({...t, primary:false, badge:t.badge || 'EDUCATOR', displayName:t.displayName || '', placeholder: !(t.name || t.photoUrl || t.bio || t.quote || (Array.isArray(t.qualifications) && t.qualifications.some(Boolean))) }))];
+    const profiles = [founder, ...(Array.isArray(c.teachers) ? c.teachers.slice(0,3) : []).map(t => ({...t, primary:false, badge:t.badge || 'EDUCATOR', displayName:t.displayName || ''}))];
     while (profiles.length < 4) profiles.push({ name:'', displayName:'', role:'Add this educator from the admin panel.', bio:'Upload an approved educator photo and fill in the profile details in Educator & Teachers.', badge:'EDUCATOR PROFILE', photoUrl:'', qualifications:[], quote:'', primary:false, placeholder:true });
     educatorTrack.innerHTML = profiles.map((p,i) => {
       const fullName = p.name || (p.placeholder ? 'Educator profile coming soon' : 'Educator');
@@ -153,7 +151,7 @@ function renderSite(data) {
       const badge = p.badge || (p.primary ? 'FOUNDER & EDUCATOR' : 'EDUCATOR');
       const points = p.primary && Array.isArray(c.educator?.highlights) ? c.educator.highlights : [];
       return `<article class="educator-slide" role="group" aria-roledescription="slide" aria-label="Educator ${i+1} of ${profiles.length}">
-        <div class="educator-photo-frame">${photoMarkup}<span class="educator-badge">${esc(badge)}</span></div>
+        <div class="educator-photo-frame">${photoMarkup}<span class="educator-photo-orbit" aria-hidden="true"></span><span class="educator-badge">${esc(badge)}</span></div>
         <div class="educator-copy"><span class="eyebrow"><span class="dot"></span> ${p.primary ? 'Meet your founder' : (hasRealContent ? 'Meet your educator' : 'Team profile slot')}</span>
           <h3>${esc(fullName)}${subName ? `<span class="educator-display-name">(${esc(subName)})</span>` : ''}</h3>
           <p class="educator-role">${esc(role)}</p>
@@ -166,7 +164,7 @@ function renderSite(data) {
         </div>
       </article>`;
     }).join('');
-    setupCarousel('educator', $('#educatorCarousel'), educatorTrack, $('#educatorCarouselDots'), 5500);
+    setupCarousel('educator', $('#educatorCarousel'), educatorTrack, $('#educatorCarouselDots'), 9500);
   }
 
   const galleryHead = $('#gallery .section-head');
@@ -181,9 +179,9 @@ function renderSite(data) {
     galleryGrid.innerHTML = `<div class="gallery-slider-viewport" role="region" aria-roledescription="carousel" aria-label="EZEE VISION learning gallery"><div class="gallery-slider-track" id="gallerySliderTrack">${galleryItems.map((g,i) => `<article class="gallery-slide" role="group" aria-roledescription="slide" aria-label="Gallery item ${i+1} of ${galleryItems.length}"><div class="gallery-media">${g.imageUrl ? `<img src="${esc(safeUrl(g.imageUrl))}" alt="${esc(g.alt || g.title || 'EZEE VISION CHAMPUA learning photo')}" loading="lazy">` : `<div class="gallery-placeholder"><span class="gallery-placeholder-icon">${esc(g.icon || '📚')}</span><span>Add a real approved photo for “${esc(g.title || 'this gallery item')}” in the admin panel</span></div>`}</div><div class="gallery-slide-caption"><div><h3>${esc(g.title || 'Learning moment')}</h3><p>${esc(g.description || '')}</p></div><span class="gallery-slide-index">${String(i+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')}</span></div></article>`).join('')}</div></div>
       <div class="carousel-controls gallery-controls"><button type="button" class="carousel-arrow" data-carousel-prev="gallery" aria-label="Previous gallery photo">←</button><div class="carousel-dots" id="galleryCarouselDots" aria-label="Choose gallery photo"></div><button type="button" class="carousel-arrow" data-carousel-next="gallery" aria-label="Next gallery photo">→</button></div>`;
     if (!galleryItems.length) galleryGrid.innerHTML = '<p class="form-hint">Add gallery items from the admin panel to start the slideshow.</p>';
-    else setupCarousel('gallery', $('#gallery'), $('#gallerySliderTrack'), $('#galleryCarouselDots'), 6500);
+    else setupCarousel('gallery', $('#gallery'), $('#gallerySliderTrack'), $('#galleryCarouselDots'), 9500);
   }
-  const galleryNote = $('#gallery .form-hint'); if (galleryNote) { const items = galleryItems; galleryNote.textContent = items.some(g => !g.imageUrl) ? 'Slides without a photo show a clearly marked placeholder. Upload real, approved classroom or learning-resource photos from the admin panel.' : 'Gallery photos should be authentic coaching images shared with permission.'; galleryNote.style.display = items.length && items.every(g => g.imageUrl) ? 'none' : ''; }
+  const galleryNote = $('#gallery .form-hint'); if (galleryNote) { const items = galleryItems; galleryNote.textContent = items.some(g => !g.imageUrl) ? 'Slides without a photo show a clearly marked placeholder. Upload real, approved classroom or learning-resource photos from the admin panel.' : 'Gallery photos should be authentic coaching images shared with permission.'; galleryNote.style.display = items.length && items.every(g => g.imageUrl) ? 'none' : ''; galleryNote.style.maxWidth='620px'; galleryNote.style.marginInline='auto'; }
 
   const contactSection = $('#contact');
   const contactHead = $('.contact-grid .reveal-left');
@@ -270,7 +268,6 @@ function renderSite(data) {
 
 
 const carouselStates = new Map();
-let carouselEventsBound = false;
 function setupCarousel(kind, root, track, dots, intervalMs) {
   if (!root || !track || !dots) return;
   const previous = carouselStates.get(kind);
@@ -278,40 +275,60 @@ function setupCarousel(kind, root, track, dots, intervalMs) {
   const slides = [...track.children];
   let index = 0;
   if (!slides.length) { dots.innerHTML = ''; return; }
+  track.style.width = '100%';
+  track.style.display = 'flex';
+  slides.forEach(slide => {
+    slide.style.flex = '0 0 100%';
+    slide.style.width = '100%';
+    slide.style.minWidth = '100%';
+    slide.style.boxSizing = 'border-box';
+  });
   if (slides.length === 1) {
-    track.style.transform = 'translateX(0)'; slides[0].setAttribute('aria-hidden','false'); dots.innerHTML = '';
-    root.querySelectorAll(`[data-carousel-prev="${kind}"],[data-carousel-next="${kind}"]`).forEach(b=>b.hidden=true);
-    carouselStates.delete(kind); return;
+    track.style.transform = 'translateX(0)';
+    dots.innerHTML = '';
+    return;
   }
-  root.querySelectorAll(`[data-carousel-prev="${kind}"],[data-carousel-next="${kind}"]`).forEach(b=>b.hidden=false);
-  dots.innerHTML = slides.map((_,i)=>`<button type="button" class="carousel-dot" data-carousel-dot="${i}" data-kind="${kind}" aria-label="Go to ${kind==='educator'?'educator profile':'gallery slide'} ${i+1}" aria-current="${i===0?'true':'false'}"></button>`).join('');
+  dots.innerHTML = slides.map((_,i)=>`<button type="button" class="carousel-dot" data-carousel-dot="${i}" data-kind="${kind}" aria-label="Go to ${kind==='educator'?'educator profile':kind==='gallery'?'gallery slide':'learning preview'} ${i+1}" aria-current="${i===0?'true':'false'}"></button>`).join('');
   const render = () => {
-    track.style.transform = `translateX(-${index*100}%)`;
+    track.style.transform = `translate3d(-${index * 100}%,0,0)`;
     [...dots.children].forEach((b,i)=>b.setAttribute('aria-current', String(i===index)));
     slides.forEach((slide,i)=>slide.setAttribute('aria-hidden',String(i!==index)));
   };
+  let state;
   const step = direction => { index = (index + direction + slides.length) % slides.length; render(); restart(); };
   const go = target => { index = (target + slides.length) % slides.length; render(); restart(); };
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const state = {get index(){return index;}, step, go, timer:null, restart:()=>restart()};
-  function stop(){ if (state.timer) clearInterval(state.timer); state.timer=null; }
-  function restart(){ stop(); if (!reduceMotion) state.timer=setInterval(()=>{index=(index+1)%slides.length;render();},intervalMs); }
-  const pause = () => stop(); const resume=()=>{ if(!reduceMotion && !state.timer) restart(); };
-  if (!root.dataset.carouselInteractionsBound) {
-    root.addEventListener('mouseenter', () => carouselStates.get(kind)?.pause());
-    root.addEventListener('mouseleave', () => carouselStates.get(kind)?.resume());
-    root.addEventListener('focusin', () => carouselStates.get(kind)?.pause());
-    root.addEventListener('focusout', () => carouselStates.get(kind)?.resume());
-    root.dataset.carouselInteractionsBound = '1';
-  }
-  state.pause = pause; state.resume = resume;
-  carouselStates.set(kind,state);
-  if (!carouselEventsBound) {
-    document.addEventListener('ev-carousel-step', e => { if (e.detail?.kind) carouselStates.get(e.detail.kind)?.step(Number(e.detail.step) || 1); });
-    document.addEventListener('ev-carousel-go', e => { if (e.detail?.kind) carouselStates.get(e.detail.kind)?.go(Number(e.detail.index) || 0); });
-    carouselEventsBound = true;
-  }
-  render();restart();
+  function stop(){ if (state?.timer) clearInterval(state.timer); if(state)state.timer=null; }
+  function restart(){ stop(); if (!reduceMotion) state.timer=setInterval(()=>{index=(index+1)%slides.length;render();}, intervalMs); }
+  state = { get index(){return index;}, step, go, timer:null, restart:()=>restart() };
+  dots.addEventListener('click', event => {
+    const dot = event.target.closest('[data-carousel-dot]');
+    if (!dot || !dots.contains(dot)) return;
+    go(Number(dot.dataset.carouselDot) || 0);
+  });
+  // Swipe left/right on phones and pointer drag on desktop. Vertical page scroll remains available.
+  const surface = root.querySelector('.hero-preview-viewport,.educator-carousel-viewport,.gallery-slider-viewport') || root;
+  surface.style.touchAction = 'pan-y';
+  let start = null;
+  surface.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    start = {x:event.clientX, y:event.clientY};
+  }, {passive:true});
+  surface.addEventListener('pointerup', event => {
+    if (!start) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    start = null;
+    if (Math.abs(dx) >= 38 && Math.abs(dx) > Math.abs(dy) * 1.15) step(dx < 0 ? 1 : -1);
+  }, {passive:true});
+  surface.addEventListener('pointercancel', () => { start = null; }, {passive:true});
+  const pause = () => stop();
+  const resume = () => { if (!reduceMotion && !state.timer) restart(); };
+  root.addEventListener('mouseenter', pause);
+  root.addEventListener('mouseleave', resume);
+  root.addEventListener('focusin', pause);
+  root.addEventListener('focusout', resume);
+  render(); restart(); carouselStates.set(kind,state);
 }
 
 function attachDynamicTilt() {
