@@ -37,7 +37,7 @@
         <div class="panel-head"><div><h3>Cloud publishing & admin access</h3><p class="sub">Connect Firebase so edits appear for every visitor—not just this browser.</p></div><button class="btn small white" id="closeAuth">Close</button></div>
         <div class="notice warn" id="cloudNotice">Firebase has not been configured yet. You can edit and save local drafts now. Follow README.txt to connect Firebase before publishing to the public website.</div>
         <form id="loginForm" class="auth-grid"><div class="field"><label for="adminEmail">Admin email</label><input id="adminEmail" type="email" autocomplete="username" placeholder="you@example.com" required></div><div class="field"><label for="adminPassword">Password</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Firebase admin password" required></div><button class="btn" type="submit" id="loginBtn">Sign in</button></form>
-        <div class="form-footer"><span class="hint" id="authStatus">No cloud account connected.</span><button class="btn danger" type="button" id="logoutBtn" hidden>Sign out</button></div>
+        <div class="form-footer"><span class="hint" id="authStatus">No cloud account connected.</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn white" type="button" id="loadCloudBtn" disabled>↓ Load latest cloud</button><button class="btn danger" type="button" id="logoutBtn" hidden>Sign out</button></div></div>
       </section>
       <div id="pageRoot"></div>
     </div>
@@ -56,6 +56,7 @@ const getPath=(o,p)=>p.split('.').reduce((v,k)=>v?.[k],o);
 function setPath(o,p,value){const parts=p.split('.');let target=o;for(let i=0;i<parts.length-1;i++){if(target[parts[i]]==null)target[parts[i]]=/^\d+$/.test(parts[i+1])?[]:{};target=target[parts[i]];}target[parts.at(-1)]=value;}
 const localRead=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch{return null}};
 let content=localRead()||clone(defaultContent), currentPage='overview', cloud=null, currentUser=null, dirty=false;
+let remoteContent=null, cloudSyncChecked=false, editorMatchesCloud=false, cloudCheckBusy=false;
 let remoteModules=null;
 const templates={
  courses:{tag:'New course',title:'Course title',description:'Describe the learning outcome.',icon:'📘',theme:'white',visible:true},
@@ -88,6 +89,18 @@ function setDirty(){dirty=true;$('#saveState').textContent='Unsaved changes';$('
 let autosaveTimer;function autoSaveLocal(){clearTimeout(autosaveTimer);autosaveTimer=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(content));}catch(e){toast('Draft was too large for browser storage. Use cloud upload or remove some images.');}},450);}
 function setSaved(label='Draft saved in this browser'){dirty=false;$('#saveState').textContent=label;$('#saveState').className='save-state saved';}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),3200);}
+function setCloudNotice(message, kind='warn') { const notice=$('#cloudNotice'); if(!notice)return; notice.className=`notice ${kind}`; notice.textContent=message; }
+function stableStringify(value){ if(Array.isArray(value))return `[${value.map(stableStringify).join(',')}]`; if(value&&typeof value==='object')return `{${Object.keys(value).sort().map(k=>`${JSON.stringify(k)}:${stableStringify(value[k])}`).join(',')}}`; return JSON.stringify(value); }
+function comparableContent(value){ const copy=clone(value||{}); delete copy.cmsUpdatedAt; return stableStringify(copy); }
+function sameContent(a,b){ return !!a && !!b && comparableContent(a)===comparableContent(b); }
+function firestoreErrorMessage(err, stage='save'){
+ const code=String(err?.code||'');
+ if(code.includes('permission-denied'))return 'Firestore permission-denied. Confirm that you are signed in as creativesayeedd@gmail.com, the account email is verified, and the active Firestore rules match this project.';
+ if(code.includes('unauthenticated'))return 'Firebase says the session is unauthenticated. Sign out, sign in again, verify the email, and retry.';
+ if(code.includes('unavailable')||code.includes('deadline-exceeded'))return 'Firebase could not reach Firestore. Check your internet connection and retry.';
+ if(code.includes('resource-exhausted'))return 'Firestore usage limit was reached. Check the free quota in Firebase Console before retrying.';
+ return `Firestore ${stage} failed${code?` (${code})`:''}: ${err?.message||'Unknown error'}`;
+}
 function getDisplayTitle(page){return page==='overview'?'Website Overview':pages[page]?.title||page;}
 function fieldMarkup(f,pathOverride){const path=pathOverride||f.path;const value=getPath(content,path);const type=f.type||'text';const id='f-'+path.replace(/[^a-zA-Z0-9]+/g,'-');const full=f.full?' full':'';let html='';
  if(type==='checkbox') return `<div class="field${full}"><div class="toggle-field"><input id="${id}" data-path="${path}" data-type="checkbox" type="checkbox" ${value!==false?'checked':''}><label for="${id}">${esc(f.label)}</label></div>${f.hint?`<small class="hint">${esc(f.hint)}</small>`:''}</div>`;
@@ -102,7 +115,7 @@ function fieldMarkup(f,pathOverride){const path=pathOverride||f.path;const value
 function repeaterMarkup(rep){const arr=getPath(content,rep.path)||[];return `<section class="panel"><div class="panel-head"><div><h3>${esc(rep.label)}</h3><p class="sub">${arr.length} item${arr.length===1?'':'s'} · listed in the same order as your website</p></div><button type="button" class="btn yellow small" data-action="add" data-path="${rep.path}">＋ Add item</button></div><div class="repeaters">${arr.map((item,i)=>`<article class="repeat-card"><div class="repeat-top"><strong>${String(i+1).padStart(2,'0')} · ${esc(item.title||item.name||item.kicker||item.tag||item.label||rep.label.replace(/s$/,''))}</strong><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn white small" data-action="move-up" data-path="${rep.path}" data-index="${i}" ${i===0?'disabled':''} aria-label="Move item up">↑</button><button type="button" class="btn white small" data-action="move-down" data-path="${rep.path}" data-index="${i}" ${i===arr.length-1?'disabled':''} aria-label="Move item down">↓</button><button type="button" class="btn danger small" data-action="remove" data-path="${rep.path}" data-index="${i}">Remove</button></div></div><div class="repeat-fields">${rep.fields.map(f=>fieldMarkup(f,`${rep.path}.${i}.${f.key}`)).join('')}</div></article>`).join('')||'<div class="empty-note">No items yet. Use “Add item” to create the first one.</div>'}</div></section>`;}
 function renderOverview(){const courseCount=(content.courses||[]).filter(x=>x.visible!==false).length;const storyCount=(content.story?.timeline||[]).length;const galleryCount=(content.gallery?.items||[]).length;const teachers=1+(content.teachers||[]).length;const cloudReady=isFirebaseConfigured&&currentUser;return `<div class="intro-banner"><div><h3>Build the coaching website you want. ✦</h3><p>Manage your public homepage from one place: educator photos, course cards, journey, gallery, WhatsApp numbers, colours, SEO and more. Keep your edits local, preview them, then publish to Firebase when cloud setup is complete.</p></div><button class="btn" data-nav="brandHero">Start editing ↗</button></div>
  <div class="dashboard-grid"><div class="metric"><div class="metric-icon">▤</div><strong>${courseCount}</strong><span>Visible course cards</span></div><div class="metric"><div class="metric-icon">♙</div><strong>${teachers}</strong><span>Educator profiles</span></div><div class="metric"><div class="metric-icon">↗</div><strong>${storyCount}</strong><span>Story milestones</span></div><div class="metric"><div class="metric-icon">▧</div><strong>${galleryCount}</strong><span>Gallery cards</span></div></div>
- <section class="panel"><div class="panel-head"><div><h3>Publishing status</h3><p class="sub">Drafts save to this browser automatically. Cloud publish requires Firebase configuration and admin sign-in.</p></div><span class="eyebrow">${cloudReady?'Cloud connected':isFirebaseConfigured?'Sign in needed':'Local mode'}</span></div><div class="notice ${cloudReady?'good':'warn'}">${cloudReady?'You are signed in. Save and publish to update the public website for all visitors.':isFirebaseConfigured?'Firebase configuration is detected. Open Cloud setup and sign in using the admin user created in Firebase Console.':'Local draft mode is active. The public website can read this draft in this browser. To make changes live for every visitor, set up Firebase once (instructions in README.txt).'} </div><div class="form-footer"><button class="btn white" data-action="export">↓ Download backup JSON</button><button class="btn white" data-action="import">↑ Import backup JSON</button><button class="btn mint" data-action="preview">↗ Preview changes</button><button class="btn danger" data-action="reset">Reset to defaults</button><input type="file" id="importFile" accept="application/json,.json" hidden></div></section>
+ <section class="panel"><div class="panel-head"><div><h3>Publishing status</h3><p class="sub">Drafts save to this browser automatically. Load the latest cloud version before editing an existing site; Publish verifies the Firestore write by reading it back.</p></div><span class="eyebrow">${cloudReady?'Cloud connected':isFirebaseConfigured?'Sign in needed':'Local mode'}</span></div><div class="notice ${cloudReady?'good':'warn'}">${cloudReady?'You are signed in. Save and publish to update the public website for all visitors.':isFirebaseConfigured?'Firebase configuration is detected. Open Cloud setup and sign in using the admin user created in Firebase Console.':'Local draft mode is active. The browser draft is private to this device and is not live for visitors. Publish through Firebase to update the public website.'} </div><div class="form-footer"><button class="btn white" data-action="export">↓ Download backup JSON</button><button class="btn white" data-action="import">↑ Import backup JSON</button><button class="btn mint" data-action="preview">↗ Preview changes</button><button class="btn danger" data-action="reset">Reset to defaults</button><input type="file" id="importFile" accept="application/json,.json" hidden></div></section>
  <section class="panel"><div class="panel-head"><div><h3>Quick edit</h3><p class="sub">Jump directly to the section you want to change.</p></div></div><div class="quick-grid">${[['brandHero','✦','Brand & Hero','Headline, colours, top announcement, buttons'],['educator','♙','Educator & Teachers','Photo, name, qualifications, team details'],['story','↗','Our Story','Timeline and coaching journey'],['gallery','▧','Gallery','Upload and arrange classroom photos'],['contact','✆','Contact & Footer','WhatsApp, other numbers, address, footer'],['visibility','☷','SEO & Visibility','Search metadata and section visibility']].map(a=>`<button class="quick-card" data-nav="${a[0]}"><span>${a[1]}</span><b>${a[2]}</b><small>${a[3]}</small></button>`).join('')}</div></section>`;}
 function renderPage(id){currentPage=id;$('#topTitle').textContent=getDisplayTitle(id);$$('#sidebarNav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='overview'){$('#pageRoot').innerHTML=renderOverview();return;}
  const page=pages[id];$('#pageRoot').innerHTML=`<div class="page-head"><div><span class="eyebrow"><span style="color:var(--pink)">●</span> Website editor</span><h2>${esc(page.title)}</h2><p>${esc(page.subtitle||'Edit the content displayed on your public website.')}</p></div></div>
@@ -132,15 +145,107 @@ async function uploadImageToGitHub(dataUrl){if(!cloud||!currentUser)throw new Er
 async function handleImageUpload(input){const file=input.files?.[0];if(!file)return;const path=input.dataset.uploadPath;try{if(!cloud||!currentUser)throw new Error('Sign in to your verified admin account first. This uploads the photo to free GitHub hosting instead of keeping it only on this phone.');toast('Compressing photo for free GitHub image hosting…');const packed=await compressedImage(file);if(packed.blob.size>2200000)throw new Error('Photo is too large after compression. Choose a smaller image.');const value=await uploadImageToGitHub(packed.dataUrl);setPath(content,path,value);setDirty();const field=$(`[data-path="${CSS.escape(path)}"]`);if(field)field.value=value;const previewEl=$(`[data-preview="${CSS.escape(path)}"]`);if(previewEl)previewEl.innerHTML=`<img src="${esc(value)}" alt="Photo preview">`;try{localStorage.setItem(KEY,JSON.stringify(content));setSaved('Draft saved in this browser');}catch(saveError){console.warn('Could not save browser draft:',saveError);setDirty();}toast('Photo uploaded to GitHub hosting. Now press Publish to show it on the live website.');}catch(err){console.error(err);toast(err.message||'Photo upload failed.');}input.value='';}
 
 
-async function initFirebase(){if(!isFirebaseConfigured){$('#cloudNotice').innerHTML='Firebase is not configured yet. Open <b>README.txt</b>, paste your Firebase web-app keys into <b>firebase-config.js</b>, and deploy the folder. Local editing and JSON backup are available now.';$('#authStatus').textContent='Local-only editing is available. Cloud publishing is not connected.';$('#sideStatusText').textContent='Local draft mode';return;}
- try{const [appMod,authMod,dbMod]=await Promise.all([import('https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js')]);const app=appMod.initializeApp(firebaseConfig);const auth=authMod.getAuth(app);const db=dbMod.getFirestore(app);cloud={app,auth,db,authMod,dbMod};authMod.onAuthStateChanged(auth,user=>{currentUser=user;const dot=$('#sideStatusDot');dot.classList.toggle('online',!!user);$('#sideStatusText').textContent=user?`Cloud signed in: ${user.email}`:'Cloud ready · sign in to publish';$('#authStatus').textContent=user?`Signed in as ${user.email}`:'Not signed in. Use your verified Firebase admin account.';$('#loginBtn').hidden=!!user;$('#logoutBtn').hidden=!user;$('#adminEmail').disabled=!!user;$('#adminPassword').disabled=!!user;$('#cloudNotice').className='notice '+(user?'good':'warn');$('#cloudNotice').textContent=user?'You are signed in. Only the configured admin email can publish, according to the included security rules.':'Firebase is connected. Create the admin account in Firebase Authentication, verify its email, then sign in here.';if(currentPage==='overview')renderPage('overview');});
- }catch(err){console.error(err);$('#cloudNotice').textContent='Could not initialise Firebase. Check firebase-config.js and your internet connection.';$('#authStatus').textContent='Firebase initialisation error.';}}
-$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!cloud){toast('Configure Firebase first using README.txt.');return;}const email=$('#adminEmail').value.trim(),password=$('#adminPassword').value;try{const credential=await cloud.authMod.signInWithEmailAndPassword(cloud.auth,email,password);$('#adminPassword').value='';if(!credential.user.emailVerified){let verificationSent=false;try{await cloud.authMod.sendEmailVerification(credential.user);verificationSent=true;}catch(verifyErr){console.warn('Verification email could not be sent.',verifyErr);}await cloud.authMod.signOut(cloud.auth);toast(verificationSent?'Verification email sent. Verify it, then sign in again. Check Spam if needed.':'Could not send verification email. Check Firebase Authorized domains and email-template settings.');return;}toast('Signed in. You can publish the website now.');}catch(err){toast(firebaseError(err.code));}});
+async function initFirebase(){
+ if(!isFirebaseConfigured){setCloudNotice('Firebase is not configured yet. Add the Firebase web-app values to firebase-config.js and redeploy. Local drafts and JSON backups remain available.','warn');$('#authStatus').textContent='Local-only editing is available. Cloud publishing is not connected.';$('#sideStatusText').textContent='Local draft mode';return;}
+ try{
+  const [appMod,authMod,dbMod]=await Promise.all([import('https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js')]);
+  const app=appMod.initializeApp(firebaseConfig);const auth=authMod.getAuth(app);const db=dbMod.getFirestore(app);cloud={app,auth,db,authMod,dbMod};
+  authMod.onAuthStateChanged(auth,async user=>{
+   currentUser=user;cloudSyncChecked=false;editorMatchesCloud=false;remoteContent=null;
+   const dot=$('#sideStatusDot');dot.classList.toggle('online',!!user);$('#sideStatusText').textContent=user?`Cloud signed in: ${user.email}`:'Cloud ready · sign in to publish';
+   $('#authStatus').textContent=user?`Signed in as ${user.email} · checking Firestore…`:'Not signed in. Use your verified Firebase admin account.';
+   $('#loginBtn').hidden=!!user;$('#logoutBtn').hidden=!user;$('#loadCloudBtn').disabled=!user||cloudCheckBusy;$('#adminEmail').disabled=!!user;$('#adminPassword').disabled=!!user;
+   if(!user){setCloudNotice('Firebase is connected. Sign in with the verified admin account to check the live website content.','warn');if(currentPage==='overview')renderPage('overview');return;}
+   setCloudNotice('Signed in. Checking the latest published document at '+firebaseConfig.projectId+' → site/content…','warn');
+   if(currentPage==='overview')renderPage('overview');
+   await inspectCloudContent();
+  });
+ }catch(err){console.error('Firebase initialisation failed:',err);setCloudNotice(`Could not initialise Firebase: ${err?.code||err?.message||'unknown error'}. Check firebase-config.js and internet access.`,'warn');$('#authStatus').textContent='Firebase initialisation error.';}
+}
+async function inspectCloudContent(){
+ if(!cloud||!currentUser)return;
+ cloudCheckBusy=true;$('#loadCloudBtn').disabled=true;
+ try{
+  const ref=cloud.dbMod.doc(cloud.db,'site','content');
+  const snap=await cloud.dbMod.getDocFromServer(ref);
+  cloudSyncChecked=true;
+  if(!snap.exists()){
+   remoteContent=null;editorMatchesCloud=true;$('#authStatus').textContent=`Signed in as ${currentUser.email} · no cloud document yet`;
+   setCloudNotice(`No Firestore document exists yet at ${firebaseConfig.projectId} / site / content. Your current editor can be used for the first publish.`,'warn');return;
+  }
+  remoteContent=clone(snap.data());editorMatchesCloud=sameContent(content,remoteContent);
+  $('#authStatus').textContent=`Signed in as ${currentUser.email} · cloud document found`;
+  if(editorMatchesCloud){content=clone(remoteContent);try{localStorage.setItem(KEY,JSON.stringify(content));}catch{}setSaved('Synced with cloud');setCloudNotice(`Cloud and editor match. Current source: ${firebaseConfig.projectId} /site/content. You can edit and publish.`,'good');}
+  else setCloudNotice('The editor draft differs from the latest Firestore content. Do not publish blindly. Use “Load latest cloud” to start from the live version, or publish this draft only after confirming the overwrite prompt.','warn');
+ }catch(err){cloudSyncChecked=false;console.error('Firestore cloud check failed:',err);$('#authStatus').textContent='Signed in · Firestore check failed';setCloudNotice(firestoreErrorMessage(err,'read')+` Project: ${firebaseConfig.projectId}; document: site/content. The editor has NOT been refreshed from cloud.`,'warn');}
+ finally{cloudCheckBusy=false;$('#loadCloudBtn').disabled=!currentUser;}
+}
+async function loadLatestCloud(){
+ if(!cloud||!currentUser){toast('Sign in to the verified admin account first.');return;}
+ const button=$('#loadCloudBtn');if(button){button.disabled=true;button.textContent='Loading…';}
+ try{
+  const ref=cloud.dbMod.doc(cloud.db,'site','content');
+  const snap=await cloud.dbMod.getDocFromServer(ref);cloudSyncChecked=true;
+  if(!snap.exists()){
+   remoteContent=null;editorMatchesCloud=true;setCloudNotice('No published Firestore document exists yet. Your current editor is ready for the first publish.','warn');toast('No cloud content exists yet; kept your current draft.');return;
+  }
+  const next=clone(snap.data());
+  if(!sameContent(content,next)){
+   const ok=confirm('The live cloud content is different from this browser editor. Loading cloud will replace the current editor content. Download a JSON backup first if you need to keep this draft. Load the latest cloud content now?');
+   if(!ok){remoteContent=next;editorMatchesCloud=false;setCloudNotice('Kept the browser draft. It differs from live cloud content; publishing it will require an explicit overwrite confirmation.','warn');toast('Kept your browser draft.');return;}
+  }
+  remoteContent=next;content=clone(next);editorMatchesCloud=true;dirty=false;
+  try{localStorage.setItem(KEY,JSON.stringify(content));}catch(err){console.warn('Cloud loaded, but local draft cache could not be updated:',err);}
+  setSaved('Loaded latest cloud content');renderPage(currentPage);
+  setCloudNotice(`Latest content loaded from ${firebaseConfig.projectId} / site/content. Make edits now, then publish.`,'good');toast('Loaded latest published content from Firestore.');
+ }catch(err){cloudSyncChecked=false;console.error('Loading cloud content failed:',err);setCloudNotice(firestoreErrorMessage(err,'read')+` Project: ${firebaseConfig.projectId}; document: site/content.`,'warn');toast(firestoreErrorMessage(err,'read'));}
+ finally{if(button){button.disabled=!currentUser;button.textContent='↓ Load latest cloud';}}
+}
+$('#loadCloudBtn').addEventListener('click',loadLatestCloud);
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!cloud){toast('Configure Firebase first using README.txt.');return;}const email=$('#adminEmail').value.trim(),password=$('#adminPassword').value;try{const credential=await cloud.authMod.signInWithEmailAndPassword(cloud.auth,email,password);$('#adminPassword').value='';if(!credential.user.emailVerified){let verificationSent=false;try{await cloud.authMod.sendEmailVerification(credential.user);verificationSent=true;}catch(verifyErr){console.warn('Verification email could not be sent.',verifyErr);}await cloud.authMod.signOut(cloud.auth);toast(verificationSent?'Verification email sent. Verify it, then sign in again. Check Spam if needed.':'Could not send verification email. Check Firebase Authorized domains and email-template settings.');return;}toast('Signed in. Checking latest cloud content…');}catch(err){toast(firebaseError(err.code));}});
 $('#logoutBtn').addEventListener('click',async()=>{if(cloud)await cloud.authMod.signOut(cloud.auth);toast('Signed out.');});
 function firebaseError(code){const known={'auth/invalid-credential':'Email or password is incorrect.','auth/user-not-found':'No Firebase admin account exists for that email.','auth/too-many-requests':'Too many attempts. Try again later.','auth/invalid-email':'Enter a valid email address.'};return known[code]||`Sign-in failed (${code||'unknown error'}). Check Firebase Authentication setup.`;}
 function imagePaths(copy){return ['brand.logoUrl','educator.photoUrl',...(copy.teachers||[]).map((_,i)=>`teachers.${i}.photoUrl`),...(copy.gallery?.items||[]).map((_,i)=>`gallery.items.${i}.imageUrl`)];}
 async function normalizeImagesForCloud(copy){const paths=imagePaths(copy);let uploaded=0;for(const path of paths){const value=getPath(copy,path);if(!String(value||'').startsWith('data:image/'))continue;const url=await uploadImageToGitHub(value);setPath(copy,path,url);uploaded++;}return uploaded;}
-async function publishCloud(){if(!isFirebaseConfigured){$('#authPanel').classList.add('open');toast('Connect Firebase first. See README.txt for exact setup.');return;}if(!cloud||!currentUser){$('#authPanel').classList.add('open');toast('Sign in to the admin account before publishing.');return;}const button=$('#publishBtn');if(button){button.disabled=true;button.textContent='Publishing…';}try{const copy=clone(content);toast('Preparing images for free GitHub hosting…');const uploadedImages=await normalizeImagesForCloud(copy);copy.cmsUpdatedAt=new Date().toISOString();await cloud.dbMod.setDoc(cloud.dbMod.doc(cloud.db,'site','content'),copy);content=copy;localStorage.setItem(KEY,JSON.stringify(content));setSaved('Published to cloud');renderPage(currentPage);toast(uploadedImages?`Published successfully. ${uploadedImages} photo(s) saved to GitHub and the website content saved to Firestore.`:'Published! Public visitors will get the new content after refresh.');}catch(err){console.error(err);toast(`${err.message||'Publish failed.'} No Firestore content was published; fix the image setup or use a public HTTPS image URL.`);}finally{if(button){button.disabled=false;button.textContent='Publish ↗';}}}
+async function publishCloud(){
+ if(!isFirebaseConfigured){$('#authPanel').classList.add('open');toast('Connect Firebase first.');return;}
+ if(!cloud||!currentUser){$('#authPanel').classList.add('open');toast('Sign in to the admin account before publishing.');return;}
+ if(!cloudSyncChecked){toast('Latest cloud state could not be confirmed. Open Cloud setup and tap “Load latest cloud” before publishing.');return;}
+ if(remoteContent&&!sameContent(content,remoteContent)){
+  const ok=confirm('This browser editor differs from the live Firestore content. Publishing will replace the ENTIRE live site/content document with this editor. Continue and publish this draft?');
+  if(!ok){toast('Publish cancelled. Load latest cloud content to avoid overwriting the live site.');return;}
+ }
+ const button=$('#publishBtn');if(button){button.disabled=true;button.textContent='Publishing…';}
+ let writeAcknowledged=false;
+ try{
+  await currentUser.reload();currentUser=cloud.auth.currentUser;
+  if(!currentUser||!currentUser.emailVerified||String(currentUser.email||'').trim().toLowerCase()!=='creativesayeedd@gmail.com')throw new Error('Admin verification failed. Sign in again using the verified creativesayeedd@gmail.com account.');
+  await currentUser.getIdToken(true);
+  const copy=clone(content);toast('Preparing images for free GitHub hosting…');
+  const uploadedImages=await normalizeImagesForCloud(copy);
+  copy.cmsUpdatedAt=new Date().toISOString();
+  const ref=cloud.dbMod.doc(cloud.db,'site','content');
+  await cloud.dbMod.setDoc(ref,copy);writeAcknowledged=true;
+  const verifySnap=await cloud.dbMod.getDocFromServer(ref);
+  if(!verifySnap.exists())throw new Error('Firestore accepted the write, but the verification read could not find site/content. Open Firestore Data before retrying.');
+  const verified=verifySnap.data();
+  if(!sameContent(copy,verified))throw new Error('Firestore write was acknowledged, but the read-back content does not match this editor. Do not retry blindly; check the site/content document and reload cloud.');
+  remoteContent=clone(verified);content=clone(verified);editorMatchesCloud=true;cloudSyncChecked=true;dirty=false;
+  let localCacheOk=true;try{localStorage.setItem(KEY,JSON.stringify(content));}catch(err){localCacheOk=false;console.warn('Published to cloud, but local draft cache failed:',err);}
+  setSaved(localCacheOk?'Published & verified in cloud':'Published & verified; local cache unavailable');renderPage(currentPage);
+  setCloudNotice(`Publish verified by reading back ${firebaseConfig.projectId} / site/content at ${new Date().toLocaleTimeString()}.`,'good');
+  toast(uploadedImages?`Published and verified. ${uploadedImages} image(s) uploaded to GitHub; Firestore content read-back matched.`:localCacheOk?'Published and verified: Firestore read-back matched the editor.':'Published and verified in Firestore. Browser draft cache could not be updated.');
+ }catch(err){
+  console.error('Publish/verification error:',err);
+  const detail=err?.code?`${err.code}: ${err.message||''}`:err?.message||'Unknown error';
+  if(writeAcknowledged){
+   setCloudNotice(`Firestore acknowledged the write, but post-save verification failed. Check ${firebaseConfig.projectId} / site/content before retrying. Details: ${detail}`,'warn');
+   toast(`Save may have reached Firestore, but verification failed. Check site/content before retrying. ${detail}`);
+  }else{
+   const friendly=firestoreErrorMessage(err,'write');setCloudNotice(`${friendly} Project: ${firebaseConfig.projectId}; path: site/content. No successful write acknowledgement was received.`,'warn');toast(friendly);
+  }
+ }finally{if(button){button.disabled=false;button.textContent='Publish ↗';}}
+}
 
 renderPage('overview');initFirebase();
 </script>

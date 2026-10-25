@@ -1,0 +1,45 @@
+EZEE VISION CHAMPUA — UPDATE MANIFEST
+======================================
+Use this current ZIP as a source package for the existing GitHub repository.
+Do not delete the repository and do not replace firebase rules blindly.
+
+REPLACE these existing files in the ROOT of repository sayeed2758/ezee.vision.champua:
+1. admin.html
+   - Adds “Load latest cloud” so the editor can deliberately load the current Firestore document.
+   - Checks the latest cloud state after sign-in.
+   - Warns before replacing live content when the editor differs.
+   - Writes to site/content, reads the document back from the Firestore server and verifies content.
+   - Shows specific Firestore errors rather than an unverified success toast.
+2. public-cms.js
+   - Reads current public content from the Firestore server.
+   - Adds optional live source diagnostics when the homepage URL ends in ?debug-cms=1.
+3. firebase-config.js
+   - Makes storageBucket optional for this Firestore-only content workflow. Firebase Storage is not called.
+4. README.txt
+   - Replaces outdated Firebase Storage instructions with the GitHub image-hosting workflow and troubleshooting.
+5. README.md
+   - Adds quick project overview and points to README.txt.
+
+ADD these new documentation files at repository root:
+6. FILES-TO-REPLACE.txt
+   - This checklist.
+7. CHANGELOG-FIXES.md
+   - Summary of the code changes and test limitations.
+
+KEEP these existing files unchanged (they are already included/consistent in this ZIP):
+- index.html
+- default-content.js
+- firestore.rules
+- storage.rules (legacy only; not used)
+- api/upload-image.js (GitHub image upload function; keep the existing Vercel environment variables)
+
+IMPORTANT DEPLOYMENT ORDER:
+A. Before replacing files, download a backup ZIP from GitHub or keep this original ZIP.
+B. Upload/replace the five files above and add FILES-TO-REPLACE.txt, then commit to branch main.
+C. Wait for the Vercel deployment to finish. No Vercel environment variable values need changing if the current ones are correct.
+D. Open /admin.html, sign in, and wait for the cloud check. Use “Load latest cloud” if the local editor differs.
+E. Change one test field and press Publish. Confirm the overwrite prompt if you intend to replace the full live site.
+F. Verify the Firestore site/content document's changed field and cmsUpdatedAt.
+G. Open the public homepage with ?debug-cms=1. It should report LIVE FIRESTORE and show the project's site/content document.
+
+Do not paste GITHUB_TOKEN into code, GitHub files, chat, or screenshots. Never enable paid billing for this workflow.

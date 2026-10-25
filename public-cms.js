@@ -215,23 +215,35 @@ function renderTestimonials(c) {
   sec.innerHTML = `<div class="wrap"><div class="section-head reveal"><span class="eyebrow"><span class="dot"></span> ${esc(c.testimonials.eyebrow || '')}</span><h2>${esc(c.testimonials.title || '')}</h2></div><div class="testimonial-grid">${items.map(t => `<article class="card testimonial-card reveal"><div class="testimonial-stars" aria-label="Five stars">★★★★★</div><blockquote>“${esc(t.quote || '')}”</blockquote><strong>${esc(t.name || '')}</strong><small>${esc(t.context || '')}</small></article>`).join('')}</div></div>`;
 }
 
+function cmsDiagnostic(message, kind='info') {
+  console[kind === 'error' ? 'error' : 'info'](`[EZEE CMS] ${message}`);
+  if (new URLSearchParams(location.search).get('debug-cms') !== '1') return;
+  let badge = document.getElementById('ezeeCmsDebugBadge');
+  if (!badge) { badge = document.createElement('div'); badge.id = 'ezeeCmsDebugBadge'; badge.style.cssText = 'position:fixed;z-index:99999;left:10px;right:10px;bottom:10px;padding:12px 14px;border:2px solid #201936;border-radius:12px;background:#fff8da;color:#201936;font:700 13px/1.45 system-ui,sans-serif;box-shadow:3px 4px 0 #201936'; document.body.appendChild(badge); }
+  badge.textContent = `CMS DIAGNOSTIC · ${message}`;
+}
+
 async function loadContent() {
   const preview = new URLSearchParams(location.search).get('preview') === '1';
   const local = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { return null; } })();
-  if (preview && local) { renderSite(local); return; }
+  if (preview && local) { renderSite(local); cmsDiagnostic("PREVIEW: rendering this browser's local draft, not the live cloud document."); return; }
   if (isFirebaseConfigured) {
     try {
-      const [{ initializeApp }, { getFirestore, doc, getDoc }] = await Promise.all([
+      const [{ initializeApp }, { getFirestore, doc, getDocFromServer }] = await Promise.all([
         import('https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js'),
         import('https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js')
       ]);
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-      const snap = await getDoc(doc(db, 'site', 'content'));
-      if (snap.exists()) { renderSite(snap.data()); return; }
-    } catch (err) { console.warn('Cloud content not available; showing local/default content.', err); }
-  }
+      const snap = await getDocFromServer(doc(db, 'site', 'content'));
+      if (snap.exists()) { renderSite(snap.data()); cmsDiagnostic(`LIVE FIRESTORE: loaded ${firebaseConfig.projectId} / site/content. Updated field: ${snap.data().cmsUpdatedAt || 'no cmsUpdatedAt metadata'}.`); return; }
+      cmsDiagnostic(`FIRESTORE DOCUMENT MISSING: ${firebaseConfig.projectId} / site/content. Showing default/local fallback.`, 'error');
+    } catch (err) {
+      console.error('[EZEE CMS] Firestore read failed; the page will use its fallback content.', err);
+      cmsDiagnostic(`FIRESTORE READ FAILED for ${firebaseConfig.projectId} / site/content: ${err?.code || err?.message || 'unknown error'}. Showing fallback content.`, 'error');
+    }
+  } else cmsDiagnostic('Firebase config is not complete; showing fallback content.', 'error');
   renderSite(local || defaultContent);
 }
 
-loadContent().catch(err => { console.error('Website content loader failed.', err); renderSite(defaultContent); });
+loadContent().catch(err => { console.error('Website content loader failed.', err); cmsDiagnostic(`Page loader failed: ${err?.message || 'unknown error'}`, 'error'); renderSite(defaultContent); });
