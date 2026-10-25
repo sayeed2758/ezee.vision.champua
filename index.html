@@ -500,6 +500,46 @@
     }
     @media(prefers-reduced-motion:reduce){.educator-photo-orbit,.educator-photo-orbit:after{animation:none!important}}
 
+
+    /* STATIC EDUCATION + PHYSICS ANIMATION — permanent artwork, not CMS-driven */
+    .physics-study-scene{position:absolute;z-index:3;top:78px;left:17px;right:17px;height:300px;min-width:0;perspective:1000px;transform-style:preserve-3d;pointer-events:none;isolation:isolate}
+    .physics-study-scene:before{content:"";position:absolute;left:50%;top:48%;width:min(80%,285px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.88) 0%,rgba(231,220,255,.6) 42%,rgba(255,214,0,.12) 68%,transparent 71%);filter:blur(1px);animation:study-aura 5.5s ease-in-out infinite}
+    .study-orbit{position:absolute;left:50%;top:45%;width:150px;height:98px;border:2px solid rgba(32,25,54,.84);border-radius:50%;transform-style:preserve-3d;box-shadow:0 0 0 1px rgba(255,255,255,.35),inset 0 0 12px rgba(32,25,54,.06);}
+    .study-orbit-one{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(0deg);animation:study-orbit-one 8s linear infinite;border-color:var(--pink)}
+    .study-orbit-two{width:150px;height:98px;transform:translate(-50%,-50%) rotateX(64deg) rotateZ(60deg);animation:study-orbit-two 9.5s linear infinite;border-color:var(--mint)}
+    .study-orbit-three{width:150px;height:98px;transform:translate(-50%,-50%) rotateX(64deg) rotateZ(120deg);animation:study-orbit-three 11s linear infinite;border-color:#e3b900}
+    .study-electron{position:absolute;top:-6px;left:calc(50% - 6px);width:12px;height:12px;border:2px solid var(--ink);border-radius:50%;background:var(--yellow);box-shadow:0 0 0 4px rgba(255,214,0,.18),0 3px 5px rgba(32,25,54,.28)}
+    .study-orbit-two .study-electron{background:var(--mint);box-shadow:0 0 0 4px rgba(0,221,167,.2),0 3px 5px rgba(32,25,54,.28)}
+    .study-orbit-three .study-electron{background:var(--pink);box-shadow:0 0 0 4px rgba(255,22,84,.16),0 3px 5px rgba(32,25,54,.28)}
+    .study-atom-core{position:absolute;left:50%;top:45%;width:54px;height:54px;display:grid;place-items:center;transform:translate(-50%,-50%) translateZ(30px);border:3px solid var(--ink);border-radius:19px;background:linear-gradient(145deg,#fff 5%,#e8dcff 60%,#cbb6ff);box-shadow:5px 6px 0 var(--ink),inset 2px 2px 6px rgba(255,255,255,.9);animation:study-core-float 4.5s ease-in-out infinite}
+    .study-atom-core span{font-size:2rem;line-height:1;filter:drop-shadow(1px 2px 0 rgba(32,25,54,.16));}
+    .study-object{position:absolute;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;width:83px;height:86px;border:2px solid var(--ink);border-radius:17px;background:#fff;box-shadow:5px 6px 0 var(--ink),inset 2px 2px 0 rgba(255,255,255,.9);transform-style:preserve-3d;animation:study-object-float 4.8s ease-in-out infinite;}
+    .study-object:after{content:"";position:absolute;inset:5px;border:1px dashed rgba(32,25,54,.22);border-radius:11px;pointer-events:none}
+    .study-object-icon{font-size:2rem;line-height:1.1;filter:drop-shadow(2px 3px 0 rgba(32,25,54,.12));transform:translateZ(14px)}
+    .study-object b{font-size:.52rem;letter-spacing:.11em;font-weight:900;line-height:1.1;transform:translateZ(10px)}
+    .study-object i{position:absolute;bottom:-8px;right:12px;width:16px;height:6px;border-radius:50%;background:rgba(32,25,54,.18);filter:blur(3px);}
+    .study-book{left:1%;top:4px;background:linear-gradient(145deg,#fff,#dffbf4);transform:rotate(-10deg) translateZ(26px);animation-delay:-1s}
+    .study-bulb{right:1%;top:5px;background:linear-gradient(145deg,#fff6b8,#fff);transform:rotate(9deg) translateZ(38px);animation-delay:-2.4s}
+    .study-flask{right:4%;bottom:3px;background:linear-gradient(145deg,#bff8e8,#fff);transform:rotate(8deg) translateZ(30px);animation-delay:-.7s}
+    .study-formula{position:absolute;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:9px 12px;border:2px solid var(--ink);border-radius:13px;background:var(--pink);color:#fff;box-shadow:4px 5px 0 var(--ink);font-family:var(--display);transform-style:preserve-3d;animation:study-formula-float 5.2s ease-in-out infinite}
+    .study-formula strong{font-size:1.03rem;letter-spacing:-.04em;line-height:1}
+    .study-formula small{font-size:.45rem;letter-spacing:.1em;font-weight:900;white-space:nowrap}
+    .study-formula-one{left:0;bottom:20px;transform:rotate(-7deg) translateZ(22px)}
+    .study-formula-two{right:0;bottom:24px;background:var(--mint);color:var(--ink);transform:rotate(6deg) translateZ(25px);animation-delay:-2.2s}
+    .study-spark{position:absolute;z-index:4;color:var(--ink);font-size:1.5rem;text-shadow:2px 3px 0 rgba(32,25,54,.12);animation:study-spark 3.2s ease-in-out infinite}
+    .study-spark-one{top:108px;left:24%;color:var(--pink)}.study-spark-two{top:150px;right:22%;color:var(--mint);animation-delay:-1.4s}
+    @keyframes study-orbit-one{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(0deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(360deg)}}
+    @keyframes study-orbit-two{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(60deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(420deg)}}
+    @keyframes study-orbit-three{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(120deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(480deg)}}
+    @keyframes study-object-float{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -9px;rotate:2deg}}
+    @keyframes study-formula-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+    @keyframes study-core-float{0%,100%{translate:0 0;scale:1}50%{translate:0 -5px;scale:1.04}}
+    @keyframes study-spark{0%,100%{transform:scale(.8) rotate(0);opacity:.72}50%{transform:scale(1.2) rotate(25deg);opacity:1}}
+    @keyframes study-aura{0%,100%{opacity:.58;transform:translate(-50%,-50%) scale(.94)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
+    @media(max-width:760px){.physics-study-scene{top:76px;left:13px;right:13px;height:300px}.study-orbit{width:clamp(118px,43vw,150px);height:clamp(80px,28vw,98px)}.study-atom-core{width:48px;height:48px;border-radius:16px}.study-atom-core span{font-size:1.8rem}.study-object{width:69px;height:73px;border-radius:14px}.study-object-icon{font-size:1.75rem}.study-object b{font-size:.47rem}.study-formula{padding:8px 9px}.study-formula strong{font-size:.92rem}.study-formula small{font-size:.4rem}.study-formula-one{bottom:17px}.study-formula-two{bottom:17px}}
+    @media(max-width:390px){.physics-study-scene{top:70px;left:9px;right:9px;height:290px}.study-object{width:62px;height:67px}.study-object-icon{font-size:1.55rem}.study-formula-one{left:-1px}.study-formula-two{right:-1px}.study-spark-one{left:18%}.study-spark-two{right:17%}}
+    @media(prefers-reduced-motion:reduce){.physics-study-scene *,.physics-study-scene:before{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -535,11 +575,18 @@
           <div class="floating-sticker sticker-c"><span>CLASSES 4–12</span> LEARNING</div>
           <div class="hero-board" data-tilt>
             <div class="board-top"><span class="tiny-chip" id="heroArtLabel">THE EV METHOD</span><span class="board-stars" aria-hidden="true">✦ ✦</span></div>
-            <div class="hero-preview-carousel" id="heroPreviewCarousel" role="region" aria-roledescription="carousel" aria-label="EZEE VISION learning previews">
-              <div class="hero-preview-viewport"><div class="hero-preview-track" id="heroPreviewTrack" aria-live="polite">
-                <article class="hero-preview-slide hero-preview-empty" role="note"><div class="hero-preview-media hero-preview-empty-media"><span aria-hidden="true">📸</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">REAL MOMENTS FROM OUR COACHING</span><h3>Classroom. Events. Student progress.</h3><p>Add real 16:9 photos through the admin panel. Only uploaded, categorized photos appear here.</p></div></article>
-              </div></div>
-              <div class="hero-preview-dots" id="heroPreviewDots" aria-label="Choose learning preview"></div>
+            <div class="physics-study-scene" role="img" aria-label="Animated science illustration with an atom, open book, light bulb, laboratory flask and physics formula">
+              <div class="study-orbit study-orbit-one" aria-hidden="true"><span class="study-electron"></span></div>
+              <div class="study-orbit study-orbit-two" aria-hidden="true"><span class="study-electron"></span></div>
+              <div class="study-orbit study-orbit-three" aria-hidden="true"><span class="study-electron"></span></div>
+              <div class="study-atom-core" aria-hidden="true"><span>⚛</span></div>
+              <div class="study-object study-book" aria-hidden="true"><span class="study-object-icon">📘</span><b>LEARN</b><i></i></div>
+              <div class="study-object study-bulb" aria-hidden="true"><span class="study-object-icon">💡</span><b>IDEAS</b><i></i></div>
+              <div class="study-object study-flask" aria-hidden="true"><span class="study-object-icon">🧪</span><b>EXPLORE</b><i></i></div>
+              <div class="study-formula study-formula-one" aria-hidden="true"><strong>F = ma</strong><small>FORCE · MOTION</small></div>
+              <div class="study-formula study-formula-two" aria-hidden="true"><strong>E = mc²</strong></div>
+              <span class="study-spark study-spark-one" aria-hidden="true">✦</span>
+              <span class="study-spark study-spark-two" aria-hidden="true">✧</span>
             </div>
             <div class="hero-step-row" id="heroArtSteps" aria-label="Our learning steps"><span class="hero-step-chip">UNDERSTAND</span><span class="hero-step-chip">PRACTISE</span><span class="hero-step-chip">ACHIEVE</span></div>
             <div class="board-phrase"><small id="heroArtEyebrow">OUR LEARNING PROMISE</small><strong><span class="board-headline" id="heroArtHeadline">Think. Learn.</span><br><span id="heroArtHighlight">Shine with confidence.</span></strong></div>
