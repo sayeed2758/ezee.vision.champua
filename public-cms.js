@@ -169,7 +169,7 @@ function renderSite(data) {
     const ctaEyebrow = $('.eyebrow', finalCta); if (ctaEyebrow) ctaEyebrow.textContent = c.cta?.eyebrow || 'Your next step';
     const ctaHeading = $('h2', finalCta); if (ctaHeading) ctaHeading.innerHTML = `${esc(c.cta?.headlineTop || 'Ready to learn')}<br><span class="accent">${esc(c.cta?.headlineBottom || 'with confidence?')}</span>`;
     const ctaDesc = $('.lead', finalCta); if (ctaDesc) ctaDesc.textContent = c.cta?.description || '';
-    const ctaLinks = $$('.cta-actions a', finalCta);
+    const ctaLinks = finalCta.querySelectorAll('.cta-actions a');
     if (ctaLinks[0]) ctaLinks[0].innerHTML = `${esc(c.cta?.primaryLabel || 'Ask about admission')} <span class="arrow">↗</span>`;
     if (ctaLinks[1]) ctaLinks[1].innerHTML = `${esc(c.cta?.secondaryLabel || 'Explore learning paths')} <span class="arrow">→</span>`;
   }
