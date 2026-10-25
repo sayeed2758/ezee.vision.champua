@@ -348,7 +348,159 @@
     }
     @media(prefers-reduced-motion:reduce){.hero-preview-icon,.educator-photo-orbit{animation:none!important}}
 
-  </style>
+
+    /* V4 FINAL FIX: full portraits, compact teacher cards, real-photo-only 16:9 showcases */
+    .educator-carousel-viewport{height:auto;min-height:0!important;overflow:hidden}
+    .educator-carousel-track{align-items:flex-start!important;height:auto!important}
+    .educator-slide{align-content:start!important;align-items:start!important;grid-template-rows:max-content max-content!important;height:auto!important;min-height:0!important;max-height:none!important}
+    .educator-photo-frame{width:min(100%,380px)!important;max-width:100%!important;aspect-ratio:4/5!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 auto!important;overflow:hidden!important;background:#fff!important}
+    .educator-photo-frame img{object-fit:contain!important;object-position:center center!important;background:#fff!important}
+    .educator-photo-orbit{position:absolute!important;inset:10px!important;left:10px!important;right:10px!important;top:10px!important;bottom:10px!important;width:auto!important;height:auto!important;max-width:none!important;aspect-ratio:auto!important;transform:none!important;border:2px solid var(--mint)!important;border-radius:17px!important;box-shadow:inset 0 0 0 1px rgba(255,214,0,.6)!important;animation:educator-outline-color 6s ease-in-out infinite!important;z-index:2!important;pointer-events:none!important}
+    .educator-photo-orbit:after{content:'✦';position:absolute;left:auto;top:6px;right:6px;width:24px;height:24px;display:grid;place-items:center;background:var(--yellow);border:1.5px solid var(--ink);border-radius:50%;font-size:.78rem;animation:educator-badge-bob 3s ease-in-out infinite}
+    .educator-display-name{display:block!important;width:fit-content;max-width:100%;margin:0 0 12px!important;padding:7px 12px;border-radius:999px;background:var(--lav2);border:1.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);color:var(--pink)!important;font-family:var(--display);font-size:clamp(1.15rem,4vw,1.65rem)!important;font-weight:800;line-height:1.1;overflow-wrap:anywhere}
+    .educator-goal-box{width:100%;margin:16px 0 0;padding:17px 18px;background:var(--lav);border:1.5px solid var(--line);border-left:5px solid var(--pink);border-radius:0 18px 18px 0;box-shadow:3px 4px 0 rgba(32,25,54,.1)}
+    .educator-goal-label{display:block;margin-bottom:8px;color:var(--pink);font-size:.7rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+    .educator-goal-box p{margin:0;color:var(--muted);font-size:1rem;line-height:1.65;overflow-wrap:anywhere}
+    .educator-copy .team-points{width:100%;margin-top:16px}
+    .educator-copy .team-point{min-width:0}
+    .educator-carousel .carousel-helper{margin-top:12px}
+    @keyframes educator-outline-color{0%,100%{border-color:var(--mint);box-shadow:inset 0 0 0 1px rgba(255,214,0,.6)}33%{border-color:var(--yellow);box-shadow:inset 0 0 0 1px rgba(255,22,84,.45)}66%{border-color:var(--pink);box-shadow:inset 0 0 0 1px rgba(0,221,167,.5)}}
+    @keyframes educator-badge-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+    /* 16:9 image area, caption below, and no decorative practice-resource cards */
+    #gallery.gallery-empty{display:none!important}
+    #gallery .gallery-grid{display:block!important;width:min(100%,860px)!important;max-width:860px!important;margin-inline:auto!important}
+    #gallery .gallery-media{width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:16/9!important;overflow:hidden!important;background:#f7f4ff!important}
+    #gallery .gallery-media img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:#f7f4ff!important}
+    #gallery .gallery-slide-caption{display:block!important;position:relative;width:100%!important;height:auto!important;min-height:0!important;padding:18px 20px!important;background:#fff!important;overflow-wrap:anywhere}
+    .gallery-category-label{display:inline-flex;margin-bottom:8px;padding:5px 9px;border:1px solid var(--ink);border-radius:999px;background:var(--lav2);font-size:.65rem;font-weight:900;letter-spacing:.07em;color:var(--ink)}
+    .gallery-result-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+    .gallery-result-meta span{display:inline-flex;align-items:center;padding:7px 10px;border:1px solid var(--ink);border-radius:999px;background:var(--yellow);box-shadow:2px 3px 0 var(--ink);font-weight:800;font-size:.82rem;overflow-wrap:anywhere}
+    .gallery-slide-index{display:inline-flex;margin-top:12px}
+    /* Home EV-method carousel: real 16:9 photographs plus caption/verified result metadata */
+    .hero-board{height:560px!important;min-height:560px!important;aspect-ratio:auto!important}
+    .hero-art{min-height:580px!important}
+    .hero-preview-carousel{height:314px!important;top:76px!important}
+    .hero-preview-viewport{height:300px!important;overflow:hidden!important}
+    .hero-preview-track{height:100%!important;align-items:stretch!important}
+    .hero-preview-slide{height:100%!important;min-height:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:7px!important;padding:8px!important;overflow:hidden!important}
+    .hero-preview-media{position:relative!important;width:100%!important;flex:0 0 auto!important;aspect-ratio:16/9!important;height:auto!important;max-height:none!important;overflow:hidden!important;background:#f7f4ff!important;border:1.5px solid var(--ink)!important;border-radius:11px!important}
+    .hero-preview-media img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:#f7f4ff!important}
+    .hero-preview-copy{flex:1 1 auto!important;min-height:0!important;gap:3px!important}
+    .hero-preview-kicker{font-size:.52rem!important;line-height:1.2!important;letter-spacing:.07em!important}
+    .hero-preview-copy h3{font-size:clamp(.84rem,2.2vw,1.03rem)!important;line-height:1.08!important;margin:0!important;overflow-wrap:anywhere}
+    .hero-preview-copy p{font-size:.65rem!important;line-height:1.3!important;margin:0!important;-webkit-line-clamp:2!important;overflow:hidden!important}
+    .hero-preview-result{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+    .hero-preview-result span{display:inline-block;padding:3px 6px;border:1px solid var(--ink);border-radius:999px;background:var(--yellow);font-size:.56rem;line-height:1.2;font-weight:900;max-width:100%;overflow-wrap:anywhere}
+    .hero-preview-empty{background:var(--white)!important;justify-content:center!important}
+    .hero-preview-empty .hero-preview-empty-media{display:grid!important;place-items:center!important;background:var(--lav2)!important;border:1.5px dashed var(--ink)!important}
+    .hero-preview-empty-media span{font-size:2.3rem;filter:drop-shadow(2px 3px 0 rgba(32,25,54,.13))}
+    .hero-preview-empty .hero-preview-copy h3{font-size:1rem!important}
+    .hero-preview-dots{height:auto!important;min-height:8px!important;margin-top:7px!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:5px!important;flex-wrap:wrap!important}
+    .hero-preview-dots .carousel-dot{width:7px!important;height:7px!important;min-width:7px!important;min-height:7px!important}
+    .hero-preview-dots .carousel-dot[aria-current=true]{width:18px!important;min-width:18px!important}
+    .hero-step-row{bottom:116px!important}
+    @media(max-width:760px){
+      .educator-slide{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:max-content max-content!important;align-content:start!important;gap:16px!important;padding:5px 2px 8px!important;height:auto!important;min-height:0!important}
+      .educator-photo-frame{width:min(100%,350px)!important;height:auto!important;aspect-ratio:4/5!important;max-height:none!important;margin-inline:auto!important}
+      .educator-copy{width:100%!important;height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;padding:0 6px 10px!important;align-self:start!important}
+      .educator-copy .educator-role{margin-bottom:8px!important}
+      .educator-goal-box{margin-top:12px;padding:14px}
+      #gallery .gallery-grid{width:min(100%,560px)!important;max-width:560px!important}
+      #gallery .gallery-media{aspect-ratio:16/9!important}
+      #gallery .gallery-slide-caption{padding:15px!important}
+      .hero-art{min-height:525px!important;height:auto!important;align-content:center!important}
+      .hero-board{height:505px!important;min-height:505px!important;max-width:420px!important;padding:15px!important}
+      .hero-preview-carousel{top:58px!important;width:calc(100% - 30px)!important;height:278px!important}
+      .hero-preview-viewport{height:260px!important}
+      .hero-preview-slide{padding:7px!important;gap:5px!important}
+      .hero-preview-media{border-radius:9px!important}
+      .hero-preview-kicker{font-size:.47rem!important;letter-spacing:.045em!important}
+      .hero-preview-copy h3{font-size:clamp(.78rem,3.2vw,.98rem)!important}
+      .hero-preview-copy p{font-size:.61rem!important;line-height:1.25!important;-webkit-line-clamp:2!important}
+      .hero-preview-result span{font-size:.5rem!important;padding:3px 5px!important}
+      .hero-preview-dots{margin-top:5px!important;gap:4px!important}
+      .hero-step-row{left:12px!important;right:12px!important;bottom:121px!important;gap:4px!important}
+      .hero-step-chip{font-size:.49rem!important;padding:5px 6px!important}
+      .hero-board .board-phrase{left:15px!important;right:13px!important;bottom:16px!important}
+      .hero-board .board-phrase strong{font-size:clamp(1.5rem,7.2vw,2rem)!important}
+    }
+    @media(max-width:390px){
+      .educator-photo-frame{width:min(100%,320px)!important}
+      .hero-art{min-height:520px!important}
+      .hero-board{height:500px!important;min-height:500px!important;padding:13px!important}
+      .hero-preview-carousel{top:56px!important;width:calc(100% - 26px)!important;height:278px!important}
+      .hero-preview-viewport{height:260px!important}
+      .hero-step-row{bottom:120px!important}
+    }
+    @media(prefers-reduced-motion:reduce){.educator-photo-orbit,.educator-photo-orbit:after{animation:none!important}}
+
+  
+
+    /* FINAL V4.1 — educator frame outline, compact slide height, real 16:9 photo stories */
+    .educator-photo-frame{aspect-ratio:4/5!important;height:auto!important;min-height:0!important;max-height:none!important;background:#fff!important;overflow:hidden!important}
+    .educator-photo-frame img{object-fit:contain!important;object-position:center!important;background:#fff!important}
+    .educator-photo-orbit{position:absolute!important;inset:10px!important;left:10px!important;right:10px!important;top:10px!important;bottom:10px!important;width:auto!important;height:auto!important;max-width:none!important;aspect-ratio:auto!important;transform:none!important;border:3px solid var(--mint)!important;border-radius:16px!important;background:transparent!important;animation:educator-frame-hue 7s linear infinite!important;box-shadow:inset 0 0 0 1px rgba(255,214,0,.28)!important;z-index:2!important;pointer-events:none!important}
+    .educator-photo-orbit:after{content:'✦';position:absolute;left:auto!important;top:5px!important;right:5px!important;width:22px!important;height:22px!important;display:grid;place-items:center;background:var(--yellow);color:var(--ink);border:1.5px solid var(--ink);border-radius:50%;font-size:.72rem;transform:none;animation:educator-badge-bob 3s ease-in-out infinite}
+    @keyframes educator-frame-hue{0%,100%{filter:hue-rotate(0deg);opacity:.86}50%{filter:hue-rotate(150deg);opacity:1}}
+    .educator-carousel-viewport{height:auto;min-height:0!important;overflow:hidden!important}
+    .educator-carousel-track{align-items:flex-start!important;height:auto!important}
+    .educator-slide{align-content:start!important;align-items:start!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important}
+    .educator-copy{min-width:0!important;min-height:0!important;height:auto!important;align-self:start!important;overflow:visible!important}
+    .educator-goal-box{width:100%!important;flex:0 0 auto!important;overflow-wrap:anywhere!important}
+    #gallery .gallery-grid{display:block!important;width:min(100%,860px)!important;max-width:860px!important;margin-inline:auto!important}
+    #gallery .gallery-media{position:relative!important;display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:16/9!important;overflow:hidden!important;border-bottom:2px solid var(--ink)!important;background:#f7f4ff!important}
+    #gallery .gallery-media img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:#f7f4ff!important}
+    #gallery .gallery-slide-caption{display:block!important;width:100%!important;height:auto!important;min-height:0!important;padding:18px 20px!important;background:#fff!important;overflow-wrap:anywhere!important}
+    .gallery-slide-caption h3,.gallery-slide-caption p{overflow-wrap:anywhere}
+    /* Home EV-method carousel: one full 16:9 photo, caption below, never worksheet-only cards */
+    .hero-art{min-height:590px!important;height:auto!important;overflow:visible!important;align-content:center!important}
+    .hero-board{height:570px!important;min-height:570px!important;aspect-ratio:auto!important;overflow:hidden!important}
+    .hero-preview-carousel{top:66px!important;left:50%!important;transform:translateX(-50%)!important;width:calc(100% - 34px)!important;height:326px!important;max-width:520px!important;overflow:hidden!important}
+    .hero-preview-viewport{height:305px!important;width:100%!important;overflow:hidden!important}
+    .hero-preview-track{height:100%!important;align-items:stretch!important}
+    .hero-preview-slide{height:100%!important;min-height:100%!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:6px!important;padding:7px!important;overflow:hidden!important}
+    .hero-preview-media{position:relative!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;flex:0 0 auto!important;aspect-ratio:16/9!important;overflow:hidden!important;background:#f7f4ff!important;border:1.5px solid var(--ink)!important;border-radius:10px!important}
+    .hero-preview-media img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:#f7f4ff!important}
+    .hero-preview-copy{display:flex!important;flex-direction:column!important;gap:3px!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important}
+    .hero-preview-kicker{font-size:.52rem!important;line-height:1.15!important;letter-spacing:.05em!important}
+    .hero-preview-copy h3{font-size:clamp(.82rem,2.9vw,1rem)!important;line-height:1.1!important;margin:0!important;overflow-wrap:anywhere!important}
+    .hero-preview-copy p{font-size:.63rem!important;line-height:1.27!important;margin:0!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important}
+    .hero-preview-result{display:flex!important;flex-wrap:wrap!important;gap:4px!important;margin-top:2px!important}
+    .hero-preview-result span{font-size:.55rem!important;padding:3px 5px!important;line-height:1.15!important;max-width:100%!important;overflow-wrap:anywhere!important}
+    .hero-preview-dots{display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;height:auto!important;min-height:8px!important;margin-top:5px!important}
+    .hero-step-row{bottom:112px!important}
+    .hero-board .board-phrase{bottom:15px!important}
+    @media(max-width:760px){
+      .educator-slide{display:flex!important;flex-direction:column!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;align-items:stretch!important;gap:16px!important;padding:5px 2px 8px!important;height:auto!important;min-height:0!important}
+      .educator-photo-frame{width:min(100%,380px)!important;height:auto!important;aspect-ratio:4/5!important;flex:0 0 auto!important;max-height:none!important;margin:0 auto!important}
+      .educator-copy{display:flex!important;flex-direction:column!important;width:100%!important;padding:0 6px 10px!important;margin:0!important;gap:0!important}
+      .educator-copy h3{font-size:clamp(2rem,9vw,3rem)!important;line-height:1.04!important;overflow-wrap:anywhere!important}
+      .hero-art{min-height:620px!important}
+      .hero-board{width:100%!important;max-width:420px!important;height:590px!important;min-height:590px!important;padding:14px!important}
+      .hero-preview-carousel{top:59px!important;width:calc(100% - 28px)!important;height:345px!important}
+      .hero-preview-viewport{height:326px!important}
+      .hero-preview-slide{padding:6px!important;gap:5px!important}
+      .hero-preview-copy h3{font-size:clamp(.78rem,3.2vw,.95rem)!important}
+      .hero-preview-copy p{font-size:.6rem!important;line-height:1.25!important;-webkit-line-clamp:2!important}
+      .hero-step-row{left:10px!important;right:10px!important;bottom:113px!important;gap:4px!important}
+      .hero-step-chip{font-size:.48rem!important;padding:5px 5px!important}
+      .hero-board .board-phrase{left:14px!important;right:12px!important;bottom:14px!important}
+      .hero-board .board-phrase strong{font-size:clamp(1.45rem,7vw,1.9rem)!important}
+      #gallery .gallery-grid{width:min(100%,560px)!important;max-width:560px!important}
+      #gallery .gallery-media{aspect-ratio:16/9!important}
+      #gallery .gallery-slide-caption{padding:15px!important}
+    }
+    @media(max-width:390px){
+      .hero-art{min-height:615px!important}
+      .hero-board{height:580px!important;min-height:580px!important;padding:12px!important}
+      .hero-preview-carousel{top:56px!important;width:calc(100% - 24px)!important;height:338px!important}
+      .hero-preview-viewport{height:319px!important}
+      .hero-step-row{bottom:110px!important}
+      .educator-photo-frame{width:min(100%,320px)!important}
+    }
+    @media(prefers-reduced-motion:reduce){.educator-photo-orbit,.educator-photo-orbit:after{animation:none!important}}
+
+</style>
 </head>
 <body>
   <div class="top-progress" id="topProgress"></div>
@@ -385,10 +537,7 @@
             <div class="board-top"><span class="tiny-chip" id="heroArtLabel">THE EV METHOD</span><span class="board-stars" aria-hidden="true">✦ ✦</span></div>
             <div class="hero-preview-carousel" id="heroPreviewCarousel" role="region" aria-roledescription="carousel" aria-label="EZEE VISION learning previews">
               <div class="hero-preview-viewport"><div class="hero-preview-track" id="heroPreviewTrack" aria-live="polite">
-                <article class="hero-preview-slide theme-yellow"><div class="hero-preview-media"><span class="hero-preview-icon" aria-hidden="true">📝</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">PRACTICE RESOURCE</span><h3>Daily Practice Papers</h3><p>Build consistency, one question at a time.</p></div></article>
-                <article class="hero-preview-slide theme-mint"><div class="hero-preview-media"><span class="hero-preview-icon" aria-hidden="true">📒</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">CLEAR NOTES</span><h3>Handwritten Notes</h3><p>Structured notes for confident revision.</p></div></article>
-                <article class="hero-preview-slide theme-pink"><div class="hero-preview-media"><span class="hero-preview-icon" aria-hidden="true">💡</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">CONCEPT FIRST</span><h3>Understand the why</h3><p>Simple explanations, stronger foundations.</p></div></article>
-                <article class="hero-preview-slide theme-lavender"><div class="hero-preview-media"><span class="hero-preview-icon" aria-hidden="true">📚</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">LEARNING TOOLS</span><h3>Worksheets & Resources</h3><p>Useful practice beyond classroom time.</p></div></article>
+                <article class="hero-preview-slide hero-preview-empty" role="note"><div class="hero-preview-media hero-preview-empty-media"><span aria-hidden="true">📸</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">REAL MOMENTS FROM OUR COACHING</span><h3>Classroom. Events. Student progress.</h3><p>Add real 16:9 photos through the admin panel. Only uploaded, categorized photos appear here.</p></div></article>
               </div></div>
               <div class="hero-preview-dots" id="heroPreviewDots" aria-label="Choose learning preview"></div>
             </div>
@@ -453,14 +602,8 @@
     <section class="section" id="gallery">
       <div class="wrap">
         <div class="section-head reveal"><span class="eyebrow"><span class="dot"></span> Inside the learning journey</span><h2>Real effort. <span class="accent">Real growth.</span></h2><p class="lead">A glimpse of the learning culture—classroom moments, practice work, notes, and the small steps that build progress.</p></div>
-        <div class="gallery-grid">
-          <article class="gallery-tile reveal"><span class="not-photo-note">Learning resource concept</span><div class="tile-illustration"><div class="notebook"><span></span><span></span><span></span><span></span><span></span></div></div><div class="tile-content"><h3>Notes that make sense</h3><p>Clear, structured learning material for revision.</p></div></article>
-          <article class="gallery-tile reveal delay-1"><span class="not-photo-note">Classroom concept</span><div class="tile-illustration" style="font-size:5rem">✍️</div><div class="tile-content"><h3>Learn by doing</h3><p>Practice turns ideas into skills.</p></div></article>
-          <article class="gallery-tile reveal delay-2"><span class="not-photo-note">Student progress concept</span><div class="tile-illustration"><div class="mini-bars"><i></i><i></i><i></i><i></i></div></div><div class="tile-content"><h3>Small steps, progress</h3><p>Regular practice, steady improvement.</p></div></article>
-          <article class="gallery-tile reveal delay-1"><span class="not-photo-note">DPP concept</span><div class="tile-illustration" style="font-size:4rem">✅</div><div class="tile-content"><h3>Daily Practice Papers</h3><p>Build consistency one question at a time.</p></div></article>
-          <article class="gallery-tile reveal delay-2"><span class="not-photo-note">Teaching concept</span><div class="tile-illustration" style="font-size:4.5rem">💡</div><div class="tile-content"><h3>Questions welcome</h3><p>Curiosity is always part of the class.</p></div></article>
-        </div>
-        <p class="form-hint" style="text-align:center;margin-top:20px">These are illustrated placeholders, not real student photographs or claimed results. Replace them with approved coaching photos to make the gallery authentic.</p>
+        <div class="gallery-grid" aria-live="polite"></div>
+        <p class="form-hint" id="galleryPhotoNote" style="text-align:center;margin-top:20px;display:none">Only real, approved classroom photos, coaching events and verified student results will appear here.</p>
       </div>
     </section>
 

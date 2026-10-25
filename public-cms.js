@@ -52,6 +52,19 @@ function normalizeContent(data) {
   }
   if (!c.educator.badge) c.educator.badge = 'FOUNDER & EDUCATOR';
   if (!c.contact.messageGreeting) c.contact.messageGreeting = 'Hello Sir';
+  const normTitle = value => String(value || '').trim().toLowerCase().replace(/[()]/g, '').replace(/\s+/g, ' ');
+  const oldPreviewTitles = new Set(['daily practice papers','daily practice papers dpp','handwritten notes','understand the why','worksheets & resources','practice that builds confidence','small steps progress','questions welcome','learn by doing','notes that make sense']);
+  const oldGalleryTitles = new Set(['notes that make sense','learn by doing','small steps progress','small steps, progress','daily practice papers','daily practice papers dpp','questions welcome','understand the why','worksheets & resources']);
+  if (Array.isArray(c.hero?.previewCards)) c.hero.previewCards = c.hero.previewCards.filter(item => !oldPreviewTitles.has(normTitle(item?.title)));
+  if (Array.isArray(c.gallery?.items)) c.gallery.items = c.gallery.items.filter(item => !oldGalleryTitles.has(normTitle(item?.title)));
+  const cleanDisplayName = value => String(value || '').trim().replace(/^[\s{\[(]+/, '').replace(/[}\])\s]+$/, '').trim();
+  if (c.educator) {
+    c.educator.displayName = cleanDisplayName(c.educator.displayName);
+    // If an older cloud record has no goal field, preserve its existing quote as the visible teaching statement.
+    if (data?.educator && !String(data.educator.goal || '').trim()) c.educator.goal = '';
+  }
+  const hasTeacherData = t => !!t && ([t.name,t.displayName,t.photoUrl,t.role,t.goal,t.bio,t.quote].some(v => String(v || '').trim()) || (Array.isArray(t.qualifications) ? t.qualifications.some(v => String(v || '').trim()) : String(t.qualifications || '').trim().length > 0));
+  c.teachers = (Array.isArray(c.teachers) ? c.teachers : []).filter(hasTeacherData).slice(0,2).map(t => ({...t, displayName: cleanDisplayName(t.displayName)}));
   return c;
 }
 
@@ -95,11 +108,21 @@ function renderSite(data) {
   const artSteps = $('#heroArtSteps');
   if (artSteps) artSteps.innerHTML = (c.hero?.artSteps || [{label:'UNDERSTAND'},{label:'PRACTISE'},{label:'ACHIEVE'}]).slice(0,4).map((step,i) => `<span class="hero-step-chip">${esc(step.label || `STEP ${i+1}`)}</span>`).join('');
   const heroPreviewTrack = $('#heroPreviewTrack');
-  const heroPreviewCards = Array.isArray(c.hero?.previewCards) && c.hero.previewCards.length ? c.hero.previewCards : (defaultContent.hero?.previewCards || []);
+  const allPreviewCards = Array.isArray(c.hero?.previewCards) ? c.hero.previewCards : (defaultContent.hero?.previewCards || []);
+  const allowedPhotoTypes = new Set(['classroom','event','student-result']);
+  const previewCategoryLabels = { classroom:'CLASSROOM MOMENT', event:'COACHING EVENT', 'student-result':'STUDENT TOPPER / RESULT' };
+  const heroPreviewCards = allPreviewCards.filter(card => allowedPhotoTypes.has(String(card.category || '')) && String(card.imageUrl || '').trim() && safeUrl(card.imageUrl) !== '#');
   if (heroPreviewTrack) {
     const previewThemes = {yellow:'theme-yellow',pink:'theme-pink',mint:'theme-mint',lavender:'theme-lavender',white:''};
-    heroPreviewTrack.innerHTML = heroPreviewCards.map((card,i) => `<article class="hero-preview-slide ${previewThemes[card.theme] || ''}" role="group" aria-roledescription="slide" aria-label="Learning preview ${i+1} of ${heroPreviewCards.length}"><div class="hero-preview-media">${card.imageUrl ? `<img src="${esc(safeUrl(card.imageUrl))}" alt="${esc(card.title || 'Learning resource thumbnail')}" loading="lazy">` : `<span class="hero-preview-icon" aria-hidden="true">${esc(card.icon || '📘')}</span>`}</div><div class="hero-preview-copy"><span class="hero-preview-kicker">${esc(card.kicker || 'EZEE VISION LEARNING')}</span><h3>${esc(card.title || 'Learning resource')}</h3><p>${esc(card.description || '')}</p></div></article>`).join('');
-    setupCarousel('heroPreview', $('#heroPreviewCarousel'), heroPreviewTrack, $('#heroPreviewDots'), 9500);
+    heroPreviewTrack.innerHTML = heroPreviewCards.length ? heroPreviewCards.map((card,i) => {
+      const resultBits = card.category === 'student-result' ? [card.studentName, card.studentClass, (card.marks !== '' && card.marks != null) ? `Marks ${card.marks}${card.totalMarks ? ` / ${card.totalMarks}` : ''}` : ''].filter(Boolean) : [];
+      const resultMarkup = resultBits.length ? `<div class="hero-preview-result">${resultBits.map(bit=>`<span>${esc(bit)}</span>`).join('')}</div>` : '';
+      const kicker = card.kicker || previewCategoryLabels[card.category] || 'EZEE VISION CHAMPUA';
+      return `<article class="hero-preview-slide ${previewThemes[card.theme] || ''}" role="group" aria-roledescription="slide" aria-label="Photo story ${i+1} of ${heroPreviewCards.length}"><div class="hero-preview-media"><img src="${esc(safeUrl(card.imageUrl))}" alt="${esc(card.alt || card.title || 'EZEE VISION CHAMPUA photo')}" loading="lazy"></div><div class="hero-preview-copy"><span class="hero-preview-kicker">${esc(kicker)}</span><h3>${esc(card.title || previewCategoryLabels[card.category])}</h3><p>${esc(card.description || '')}</p>${resultMarkup}</div></article>`;
+    }).join('') : `<article class="hero-preview-slide hero-preview-empty" role="note"><div class="hero-preview-media hero-preview-empty-media"><span aria-hidden="true">📸</span></div><div class="hero-preview-copy"><span class="hero-preview-kicker">REAL MOMENTS FROM OUR COACHING</span><h3>Classroom. Events. Student progress.</h3><p>Add real 16:9 photos through the admin panel. Only uploaded, categorized photos appear here.</p></div></article>`;
+    const heroPreviewRoot = $('#heroPreviewCarousel');
+    if (heroPreviewRoot) heroPreviewRoot.classList.toggle('has-real-photo-stories', heroPreviewCards.length > 0);
+    setupCarousel('heroPreview', heroPreviewRoot, heroPreviewTrack, $('#heroPreviewDots'), 9500);
   }
 
   const coursesSection = $('#courses');
@@ -136,52 +159,61 @@ function renderSite(data) {
   }
   const educatorTrack = $('#educatorCarouselTrack');
   if (educatorTrack) {
-    const founder = { ...(c.educator || {}), displayName: c.educator?.displayName || '', badge: c.educator?.badge || 'FOUNDER & EDUCATOR', primary: true };
-    const profiles = [founder, ...(Array.isArray(c.teachers) ? c.teachers.slice(0,3) : []).map(t => ({...t, primary:false, badge:t.badge || 'EDUCATOR', displayName:t.displayName || ''}))];
-    while (profiles.length < 4) profiles.push({ name:'', displayName:'', role:'Add this educator from the admin panel.', bio:'Upload an approved educator photo and fill in the profile details in Educator & Teachers.', badge:'EDUCATOR PROFILE', photoUrl:'', qualifications:[], quote:'', primary:false, placeholder:true });
+    const founder = { ...(c.educator || {}), displayName: c.educator?.displayName || '', goal: c.educator?.goal || '', badge: c.educator?.badge || 'FOUNDER & EDUCATOR', primary: true };
+    const hasTeacherData = t => !!t && ([t.name,t.displayName,t.photoUrl,t.role,t.goal,t.bio,t.quote].some(v => String(v || '').trim()) || (Array.isArray(t.qualifications) ? t.qualifications.some(v => String(v || '').trim()) : String(t.qualifications || '').trim().length > 0));
+    const extraTeachers = (Array.isArray(c.teachers) ? c.teachers : []).filter(hasTeacherData).slice(0,2).map(t => ({...t, primary:false, badge:t.badge || 'EDUCATOR', displayName:t.displayName || ''}));
+    const profiles = [founder, ...extraTeachers].slice(0,3);
     educatorTrack.innerHTML = profiles.map((p,i) => {
-      const fullName = p.name || (p.placeholder ? 'Educator profile coming soon' : 'Educator');
-      const subName = p.displayName || '';
-      const role = p.role || (p.placeholder ? 'Add role / subjects in admin' : 'Educator');
-      const quals = Array.isArray(p.qualifications) ? p.qualifications : String(p.qualifications || '').split(',');
-      const hasRealContent = Boolean(p.name || p.photoUrl || p.role || p.bio || p.quote || quals.filter(Boolean).length);
+      const fullName = p.name || 'Educator';
+      const subName = String(p.displayName || '').trim().replace(/^[\s{\[(]+/, '').replace(/[}\])\s]+$/, '').trim();
+      const role = p.role || 'Educator';
+      const quals = Array.isArray(p.qualifications) ? p.qualifications : String(p.qualifications || '').split(/[,\n]/);
+      const badge = p.primary ? (p.badge || 'FOUNDER & EDUCATOR') : (p.badge && p.badge !== 'FOUNDER & EDUCATOR' ? p.badge : 'EDUCATOR');
       const photoMarkup = p.photoUrl
         ? `<img src="${esc(safeUrl(p.photoUrl))}" alt="${esc(fullName)}" loading="lazy">`
-        : `<div class="educator-photo-placeholder"><span class="placeholder-icon">${p.placeholder ? '＋' : 'EV'}</span><span>${p.placeholder ? 'Add educator photo in admin' : 'Upload a real educator photo in admin'}</span></div>`;
-      const badge = p.badge || (p.primary ? 'FOUNDER & EDUCATOR' : 'EDUCATOR');
-      const points = p.primary && Array.isArray(c.educator?.highlights) ? c.educator.highlights : [];
+        : `<div class="educator-photo-placeholder"><span class="placeholder-icon">EV</span><span>Add an approved educator photo in the admin panel</span></div>`;
+      const goalText = p.goal || p.quote || p.bio || '';
+      const goalBox = goalText ? `<div class="educator-goal-box"><span class="educator-goal-label">TEACHING GOAL</span><p>${esc(goalText)}</p></div>` : '';
+      const points = p.primary && Array.isArray(c.educator?.highlights) ? c.educator.highlights.filter(pt=>pt.title||pt.description).slice(0,2) : [];
+      const primaryPoints = points.length ? `<div class="team-points">${points.map(pt=>`<div class="team-point"><span class="point-icon">${esc(pt.icon || '✦')}</span><strong>${esc(pt.title || '')}</strong><small>${esc(pt.description || '')}</small></div>`).join('')}</div>` : '';
       return `<article class="educator-slide" role="group" aria-roledescription="slide" aria-label="Educator ${i+1} of ${profiles.length}">
         <div class="educator-photo-frame">${photoMarkup}<span class="educator-photo-orbit" aria-hidden="true"></span><span class="educator-badge">${esc(badge)}</span></div>
-        <div class="educator-copy"><span class="eyebrow"><span class="dot"></span> ${p.primary ? 'Meet your founder' : (hasRealContent ? 'Meet your educator' : 'Team profile slot')}</span>
-          <h3>${esc(fullName)}${subName ? `<span class="educator-display-name">(${esc(subName)})</span>` : ''}</h3>
+        <div class="educator-copy"><span class="eyebrow"><span class="dot"></span> ${p.primary ? 'Meet your founder' : 'Meet your educator'}</span>
+          <h3>${esc(fullName)}</h3>${subName ? `<span class="educator-display-name">${esc(subName)}</span>` : ''}
           <p class="educator-role">${esc(role)}</p>
-          ${p.primary && quals.filter(Boolean).length ? `<div class="qualifications">${quals.filter(Boolean).map(q=>`<span class="qualification">${esc(q)}</span>`).join('')}</div>` : ''}
-          ${!p.primary && quals.filter(Boolean).length ? `<div class="qualifications">${quals.filter(Boolean).map(q=>`<span class="qualification">${esc(q)}</span>`).join('')}</div>` : ''}
-          ${p.primary && p.quote ? `<blockquote class="quote">“${esc(p.quote)}”</blockquote>` : p.quote ? `<blockquote class="quote">“${esc(p.quote)}”</blockquote>` : ''}
-          ${!p.primary && p.bio ? `<p class="educator-bio">${esc(p.bio)}</p>` : ''}
-          ${p.primary && points.length ? `<div class="team-points">${points.map(pt=>`<div class="team-point"><span class="point-icon">${esc(pt.icon || '✦')}</span><strong>${esc(pt.title || '')}</strong><small>${esc(pt.description || '')}</small></div>`).join('')}</div>` : ''}
-          ${p.placeholder ? '<p class="educator-bio">This is an empty sample slot—not a real staff profile. Add the teacher name, role, photo, qualifications, and bio through the admin panel.</p>' : ''}
+          ${quals.filter(q=>String(q||'').trim()).length ? `<div class="qualifications">${quals.filter(q=>String(q||'').trim()).map(q=>`<span class="qualification">${esc(q)}</span>`).join('')}</div>` : ''}
+          ${goalBox}
+          ${primaryPoints}
         </div>
       </article>`;
     }).join('');
     setupCarousel('educator', $('#educatorCarousel'), educatorTrack, $('#educatorCarouselDots'), 9500);
+    const note = $('#educatorCarouselNote'); if(note) note.textContent = 'Swipe left or right to meet our three educators. Photos, names, qualifications and teaching goals are managed in the admin panel.';
   }
 
   const galleryHead = $('#gallery .section-head');
   if (galleryHead) {
-    const eyebrow = $('.eyebrow', galleryHead); if (eyebrow) eyebrow.innerHTML = `<span class="dot"></span> ${esc(c.gallery?.eyebrow || '')}`;
-    const heading = $('h2', galleryHead); if (heading) heading.innerHTML = `${esc(c.gallery?.titleLead || '')} <span class="accent">${esc(c.gallery?.titleHighlight || '')}</span>`;
-    const lead = $('.lead', galleryHead); if (lead) lead.textContent = c.gallery?.description || '';
+    const eyebrow = $('.eyebrow', galleryHead); if (eyebrow) eyebrow.innerHTML = `<span class="dot"></span> ${esc(c.gallery?.eyebrow || 'Inside the learning journey')}`;
+    const heading = $('h2', galleryHead); if (heading) heading.innerHTML = `${esc(c.gallery?.titleLead || 'Real moments.')} <span class="accent">${esc(c.gallery?.titleHighlight || 'Real growth.')}</span>`;
+    const lead = $('.lead', galleryHead); if (lead) lead.textContent = c.gallery?.description || 'Real classroom moments, coaching events and verified student achievements.';
   }
   const galleryGrid = $('.gallery-grid');
-  const galleryItems = Array.isArray(c.gallery?.items) ? c.gallery.items : [];
+  const allGalleryItems = Array.isArray(c.gallery?.items) ? c.gallery.items : [];
+  const galleryItems = allGalleryItems.filter(g => allowedPhotoTypes.has(String(g.category || '')) && String(g.imageUrl || '').trim() && safeUrl(g.imageUrl) !== '#');
   if (galleryGrid) {
-    galleryGrid.innerHTML = `<div class="gallery-slider-viewport" role="region" aria-roledescription="carousel" aria-label="EZEE VISION learning gallery"><div class="gallery-slider-track" id="gallerySliderTrack">${galleryItems.map((g,i) => `<article class="gallery-slide" role="group" aria-roledescription="slide" aria-label="Gallery item ${i+1} of ${galleryItems.length}"><div class="gallery-media">${g.imageUrl ? `<img src="${esc(safeUrl(g.imageUrl))}" alt="${esc(g.alt || g.title || 'EZEE VISION CHAMPUA learning photo')}" loading="lazy">` : `<div class="gallery-placeholder"><span class="gallery-placeholder-icon">${esc(g.icon || '📚')}</span><span>Add a real approved photo for “${esc(g.title || 'this gallery item')}” in the admin panel</span></div>`}</div><div class="gallery-slide-caption"><div><h3>${esc(g.title || 'Learning moment')}</h3><p>${esc(g.description || '')}</p></div><span class="gallery-slide-index">${String(i+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')}</span></div></article>`).join('')}</div></div>
-      <div class="carousel-controls gallery-controls"><button type="button" class="carousel-arrow" data-carousel-prev="gallery" aria-label="Previous gallery photo">←</button><div class="carousel-dots" id="galleryCarouselDots" aria-label="Choose gallery photo"></div><button type="button" class="carousel-arrow" data-carousel-next="gallery" aria-label="Next gallery photo">→</button></div>`;
-    if (!galleryItems.length) galleryGrid.innerHTML = '<p class="form-hint">Add gallery items from the admin panel to start the slideshow.</p>';
-    else setupCarousel('gallery', $('#gallery'), $('#gallerySliderTrack'), $('#galleryCarouselDots'), 9500);
+    const section = $('#gallery');
+    if (section) section.classList.toggle('gallery-empty', galleryItems.length === 0);
+    galleryGrid.innerHTML = galleryItems.length ? `<div class="gallery-slider-viewport" role="region" aria-roledescription="carousel" aria-label="EZEE VISION CHAMPUA real photo gallery"><div class="gallery-slider-track" id="gallerySliderTrack">${galleryItems.map((g,i) => {
+      const typeLabel = {classroom:'CLASSROOM MOMENT',event:'COACHING EVENT','student-result':'STUDENT TOPPER / RESULT'}[g.category] || 'EZEE VISION CHAMPUA';
+      const resultInfo = g.category === 'student-result' ? [g.studentName, g.studentClass, (g.marks !== '' && g.marks != null) ? `Marks: ${g.marks}${g.totalMarks ? ` / ${g.totalMarks}` : ''}` : ''].filter(Boolean) : [];
+      const resultMarkup = resultInfo.length ? `<div class="gallery-result-meta">${resultInfo.map(bit=>`<span>${esc(bit)}</span>`).join('')}</div>` : '';
+      return `<article class="gallery-slide" role="group" aria-roledescription="slide" aria-label="Gallery photo ${i+1} of ${galleryItems.length}"><div class="gallery-media"><img src="${esc(safeUrl(g.imageUrl))}" alt="${esc(g.alt || g.title || typeLabel)}" loading="lazy"></div><div class="gallery-slide-caption"><div><span class="gallery-category-label">${esc(typeLabel)}</span><h3>${esc(g.title || typeLabel)}</h3><p>${esc(g.description || '')}</p>${resultMarkup}</div><span class="gallery-slide-index">${String(i+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')}</span></div></article>`;
+    }).join('')}</div></div><div class="carousel-controls gallery-controls"><div class="carousel-dots" id="galleryCarouselDots" aria-label="Choose gallery photo"></div></div>` : '';
+    if (galleryItems.length) setupCarousel('gallery', $('#gallery'), $('#gallerySliderTrack'), $('#galleryCarouselDots'), 9500);
   }
-  const galleryNote = $('#gallery .form-hint'); if (galleryNote) { const items = galleryItems; galleryNote.textContent = items.some(g => !g.imageUrl) ? 'Slides without a photo show a clearly marked placeholder. Upload real, approved classroom or learning-resource photos from the admin panel.' : 'Gallery photos should be authentic coaching images shared with permission.'; galleryNote.style.display = items.length && items.every(g => g.imageUrl) ? 'none' : ''; galleryNote.style.maxWidth='620px'; galleryNote.style.marginInline='auto'; }
+  const galleryNote = $('#galleryPhotoNote');
+  if (galleryNote) { galleryNote.textContent = 'Only real, approved classroom photos, coaching events and verified student results are shown. Add as many slides as needed in the admin panel.'; galleryNote.style.display = galleryItems.length ? '' : 'none'; }
+
 
   const contactSection = $('#contact');
   const contactHead = $('.contact-grid .reveal-left');
@@ -247,7 +279,7 @@ function renderSite(data) {
   }
   if (finalCta && c.visibility?.finalCta === false) finalCta.style.display = 'none';
   const visibilityTargets = { courses: '#courses', method: '.method-band', story: '#journey', educator: '#teachers', gallery: '#gallery' };
-  Object.entries(visibilityTargets).forEach(([key, selector]) => { const el = $(selector); if (el) el.style.display = c.visibility?.[key] === false ? 'none' : ''; });
+  Object.entries(visibilityTargets).forEach(([key, selector]) => { const el = $(selector); if (el) el.style.display = c.visibility?.[key] === false || (key === 'gallery' && el.classList.contains('gallery-empty')) ? 'none' : ''; });
   const legal = c.legal || defaultContent.legal;
   const renderLegalBody = (intro, items) => `<p class="legal-intro">${esc(intro || '')}</p>${(items || []).map(item => `<section><h3>${esc(item.heading || '')}</h3><p>${esc(item.body || '')}</p></section>`).join('')}`;
   const privacyTitle = $('#privacyDialogTitle'); if (privacyTitle) privacyTitle.textContent = legal.privacyTitle || 'Privacy Policy';
@@ -289,10 +321,23 @@ function setupCarousel(kind, root, track, dots, intervalMs) {
     return;
   }
   dots.innerHTML = slides.map((_,i)=>`<button type="button" class="carousel-dot" data-carousel-dot="${i}" data-kind="${kind}" aria-label="Go to ${kind==='educator'?'educator profile':kind==='gallery'?'gallery slide':'learning preview'} ${i+1}" aria-current="${i===0?'true':'false'}"></button>`).join('');
+  const measureActiveEducator = () => {
+    if (kind !== 'educator') return;
+    const viewport = root.querySelector('.educator-carousel-viewport');
+    const activeSlide = slides[index];
+    if (!viewport || !activeSlide) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const currentSlide = slides[index];
+      if (!currentSlide || !viewport.isConnected) return;
+      const activeHeight = Math.ceil(Math.max(currentSlide.scrollHeight, currentSlide.getBoundingClientRect().height));
+      if (activeHeight > 0) viewport.style.height = `${activeHeight}px`;
+    }));
+  };
   const render = () => {
     track.style.transform = `translate3d(-${index * 100}%,0,0)`;
     [...dots.children].forEach((b,i)=>b.setAttribute('aria-current', String(i===index)));
     slides.forEach((slide,i)=>slide.setAttribute('aria-hidden',String(i!==index)));
+    measureActiveEducator();
   };
   let state;
   const step = direction => { index = (index + direction + slides.length) % slides.length; render(); restart(); };
@@ -328,6 +373,10 @@ function setupCarousel(kind, root, track, dots, intervalMs) {
   root.addEventListener('mouseleave', resume);
   root.addEventListener('focusin', pause);
   root.addEventListener('focusout', resume);
+  if (kind === 'educator') {
+    slides.forEach(slide => slide.querySelectorAll('img').forEach(img => img.addEventListener('load', measureActiveEducator)));
+    window.addEventListener('resize', measureActiveEducator, {passive:true});
+  }
   render(); restart(); carouselStates.set(kind,state);
 }
 

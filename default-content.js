@@ -5,12 +5,7 @@ export const defaultContent = {
   hero: {
     announcement: 'Building brighter futures, one concept at a time', headlineTop: 'Learn with clarity.', headlineLead: 'Grow with', headlineHighlight: 'confidence.',
     description: 'At EZEE VISION CHAMPUA, we make learning meaningful through strong concepts, regular practice, and guidance that helps every student move forward.',
-    ctaPrimary: 'Explore Courses', ctaPrimaryTarget: '#courses', ctaSecondary: 'Our Story', ctaSecondaryTarget: '#journey', note: 'Concept-first teaching · Classes 4–12', artLabel: 'THE EV METHOD', artSteps: [{ label: 'UNDERSTAND' }, { label: 'PRACTISE' }, { label: 'ACHIEVE' }], artEyebrow: 'OUR LEARNING PROMISE', artHeadline: 'Think. Learn.', artHighlight: 'Shine with confidence.', previewCards: [
-      { kicker: 'PRACTICE RESOURCE', title: 'Daily Practice Papers', description: 'Build consistency, one question at a time.', icon: '📝', imageUrl: '', theme: 'yellow' },
-      { kicker: 'CLEAR NOTES', title: 'Handwritten Notes', description: 'Structured notes for more confident revision.', icon: '📒', imageUrl: '', theme: 'mint' },
-      { kicker: 'CONCEPT FIRST', title: 'Understand the why', description: 'Simple explanations, stronger foundations.', icon: '💡', imageUrl: '', theme: 'pink' },
-      { kicker: 'LEARNING TOOLS', title: 'Worksheets & Resources', description: 'Useful practice beyond classroom time.', icon: '📚', imageUrl: '', theme: 'lavender' }
-    ]
+    ctaPrimary: 'Explore Courses', ctaPrimaryTarget: '#courses', ctaSecondary: 'Our Story', ctaSecondaryTarget: '#journey', note: 'Concept-first teaching · Classes 4–12', artLabel: 'THE EV METHOD', artSteps: [{ label: 'UNDERSTAND' }, { label: 'PRACTISE' }, { label: 'ACHIEVE' }], artEyebrow: 'OUR LEARNING PROMISE', artHeadline: 'Think. Learn.', artHighlight: 'Shine with confidence.', previewCards: []
   },
   marquee: { items: ['STRONG CONCEPTS', 'DAILY PRACTICE', 'PERSONAL GUIDANCE', 'CONFIDENT LEARNERS'] },
   courses: [
@@ -42,6 +37,7 @@ export const defaultContent = {
   educator: {
     sectionEyebrow: 'The people behind the lessons', sectionTitleLead: 'Teaching with', sectionTitleHighlight: 'purpose.', sectionDescription: 'Good teaching is more than explaining a chapter. It is helping students feel capable of learning it.',
     photoUrl: '', badge: 'FOUNDER & EDUCATOR', name: 'Sayeedur Rahman', displayName: 'Shahid Sir', role: 'Teacher · Educational Content Creator',
+    goal: 'Help students understand concepts clearly, build strong foundations, and learn with confidence.',
     quote: 'My goal is not only to help students finish a syllabus, but to help them understand what they learn and feel confident using that knowledge.',
     qualifications: ['D.El.Ed.', 'CTET Paper I', 'OTET Paper I', 'MA · Islamic History'],
     highlights: [
@@ -53,13 +49,7 @@ export const defaultContent = {
   gallery: {
     eyebrow: 'Inside the learning journey', titleLead: 'Real effort.', titleHighlight: 'Real growth.',
     description: 'A glimpse of the learning culture—classroom moments, practice work, notes, and the small steps that build progress.',
-    items: [
-      { title: 'Notes that make sense', description: 'Clear, structured learning material for revision.', icon: '📒', alt: 'Learning notes', imageUrl: '' },
-      { title: 'Learn by doing', description: 'Practice turns ideas into skills.', icon: '✍️', alt: 'Students practising', imageUrl: '' },
-      { title: 'Small steps, progress', description: 'Regular practice, steady improvement.', icon: '📈', alt: 'Student progress', imageUrl: '' },
-      { title: 'Daily Practice Papers', description: 'Build consistency one question at a time.', icon: '✅', alt: 'Daily practice paper', imageUrl: '' },
-      { title: 'Questions welcome', description: 'Curiosity is always part of the class.', icon: '💡', alt: 'Concept learning', imageUrl: '' }
-    ]
+    items: []
   },
   testimonials: { eyebrow: 'Words from our learning community', title: 'Experiences that matter', items: [] },
   cta: { eyebrow: 'Your next step', headlineTop: 'Ready to learn', headlineBottom: 'with confidence?', description: 'Tell us the class and subject you are looking for. We will help you find the right learning path.', primaryLabel: 'Ask about admission', secondaryLabel: 'Explore learning paths' },
