@@ -501,43 +501,66 @@
     @media(prefers-reduced-motion:reduce){.educator-photo-orbit,.educator-photo-orbit:after{animation:none!important}}
 
 
-    /* STATIC EDUCATION + PHYSICS ANIMATION — permanent artwork, not CMS-driven */
-    .physics-study-scene{position:absolute;z-index:3;top:78px;left:17px;right:17px;height:300px;min-width:0;perspective:1000px;transform-style:preserve-3d;pointer-events:none;isolation:isolate}
-    .physics-study-scene:before{content:"";position:absolute;left:50%;top:48%;width:min(80%,285px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.88) 0%,rgba(231,220,255,.6) 42%,rgba(255,214,0,.12) 68%,transparent 71%);filter:blur(1px);animation:study-aura 5.5s ease-in-out infinite}
-    .study-orbit{position:absolute;left:50%;top:45%;width:150px;height:98px;border:2px solid rgba(32,25,54,.84);border-radius:50%;transform-style:preserve-3d;box-shadow:0 0 0 1px rgba(255,255,255,.35),inset 0 0 12px rgba(32,25,54,.06);}
-    .study-orbit-one{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(0deg);animation:study-orbit-one 8s linear infinite;border-color:var(--pink)}
-    .study-orbit-two{width:150px;height:98px;transform:translate(-50%,-50%) rotateX(64deg) rotateZ(60deg);animation:study-orbit-two 9.5s linear infinite;border-color:var(--mint)}
-    .study-orbit-three{width:150px;height:98px;transform:translate(-50%,-50%) rotateX(64deg) rotateZ(120deg);animation:study-orbit-three 11s linear infinite;border-color:#e3b900}
-    .study-electron{position:absolute;top:-6px;left:calc(50% - 6px);width:12px;height:12px;border:2px solid var(--ink);border-radius:50%;background:var(--yellow);box-shadow:0 0 0 4px rgba(255,214,0,.18),0 3px 5px rgba(32,25,54,.28)}
-    .study-orbit-two .study-electron{background:var(--mint);box-shadow:0 0 0 4px rgba(0,221,167,.2),0 3px 5px rgba(32,25,54,.28)}
-    .study-orbit-three .study-electron{background:var(--pink);box-shadow:0 0 0 4px rgba(255,22,84,.16),0 3px 5px rgba(32,25,54,.28)}
-    .study-atom-core{position:absolute;left:50%;top:45%;width:54px;height:54px;display:grid;place-items:center;transform:translate(-50%,-50%) translateZ(30px);border:3px solid var(--ink);border-radius:19px;background:linear-gradient(145deg,#fff 5%,#e8dcff 60%,#cbb6ff);box-shadow:5px 6px 0 var(--ink),inset 2px 2px 6px rgba(255,255,255,.9);animation:study-core-float 4.5s ease-in-out infinite}
-    .study-atom-core span{font-size:2rem;line-height:1;filter:drop-shadow(1px 2px 0 rgba(32,25,54,.16));}
-    .study-object{position:absolute;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;width:83px;height:86px;border:2px solid var(--ink);border-radius:17px;background:#fff;box-shadow:5px 6px 0 var(--ink),inset 2px 2px 0 rgba(255,255,255,.9);transform-style:preserve-3d;animation:study-object-float 4.8s ease-in-out infinite;}
-    .study-object:after{content:"";position:absolute;inset:5px;border:1px dashed rgba(32,25,54,.22);border-radius:11px;pointer-events:none}
-    .study-object-icon{font-size:2rem;line-height:1.1;filter:drop-shadow(2px 3px 0 rgba(32,25,54,.12));transform:translateZ(14px)}
-    .study-object b{font-size:.52rem;letter-spacing:.11em;font-weight:900;line-height:1.1;transform:translateZ(10px)}
-    .study-object i{position:absolute;bottom:-8px;right:12px;width:16px;height:6px;border-radius:50%;background:rgba(32,25,54,.18);filter:blur(3px);}
-    .study-book{left:1%;top:4px;background:linear-gradient(145deg,#fff,#dffbf4);transform:rotate(-10deg) translateZ(26px);animation-delay:-1s}
-    .study-bulb{right:1%;top:5px;background:linear-gradient(145deg,#fff6b8,#fff);transform:rotate(9deg) translateZ(38px);animation-delay:-2.4s}
-    .study-flask{right:4%;bottom:3px;background:linear-gradient(145deg,#bff8e8,#fff);transform:rotate(8deg) translateZ(30px);animation-delay:-.7s}
-    .study-formula{position:absolute;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:9px 12px;border:2px solid var(--ink);border-radius:13px;background:var(--pink);color:#fff;box-shadow:4px 5px 0 var(--ink);font-family:var(--display);transform-style:preserve-3d;animation:study-formula-float 5.2s ease-in-out infinite}
-    .study-formula strong{font-size:1.03rem;letter-spacing:-.04em;line-height:1}
-    .study-formula small{font-size:.45rem;letter-spacing:.1em;font-weight:900;white-space:nowrap}
-    .study-formula-one{left:0;bottom:20px;transform:rotate(-7deg) translateZ(22px)}
-    .study-formula-two{right:0;bottom:24px;background:var(--mint);color:var(--ink);transform:rotate(6deg) translateZ(25px);animation-delay:-2.2s}
-    .study-spark{position:absolute;z-index:4;color:var(--ink);font-size:1.5rem;text-shadow:2px 3px 0 rgba(32,25,54,.12);animation:study-spark 3.2s ease-in-out infinite}
-    .study-spark-one{top:108px;left:24%;color:var(--pink)}.study-spark-two{top:150px;right:22%;color:var(--mint);animation-delay:-1.4s}
-    @keyframes study-orbit-one{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(0deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(360deg)}}
-    @keyframes study-orbit-two{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(60deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(420deg)}}
-    @keyframes study-orbit-three{0%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(120deg)}100%{transform:translate(-50%,-50%) rotateX(64deg) rotateZ(480deg)}}
-    @keyframes study-object-float{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -9px;rotate:2deg}}
-    @keyframes study-formula-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-    @keyframes study-core-float{0%,100%{translate:0 0;scale:1}50%{translate:0 -5px;scale:1.04}}
-    @keyframes study-spark{0%,100%{transform:scale(.8) rotate(0);opacity:.72}50%{transform:scale(1.2) rotate(25deg);opacity:1}}
-    @keyframes study-aura{0%,100%{opacity:.58;transform:translate(-50%,-50%) scale(.94)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
-    @media(max-width:760px){.physics-study-scene{top:76px;left:13px;right:13px;height:300px}.study-orbit{width:clamp(118px,43vw,150px);height:clamp(80px,28vw,98px)}.study-atom-core{width:48px;height:48px;border-radius:16px}.study-atom-core span{font-size:1.8rem}.study-object{width:69px;height:73px;border-radius:14px}.study-object-icon{font-size:1.75rem}.study-object b{font-size:.47rem}.study-formula{padding:8px 9px}.study-formula strong{font-size:.92rem}.study-formula small{font-size:.4rem}.study-formula-one{bottom:17px}.study-formula-two{bottom:17px}}
-    @media(max-width:390px){.physics-study-scene{top:70px;left:9px;right:9px;height:290px}.study-object{width:62px;height:67px}.study-object-icon{font-size:1.55rem}.study-formula-one{left:-1px}.study-formula-two{right:-1px}.study-spark-one{left:18%}.study-spark-two{right:17%}}
+    /* PERMANENT EV METHOD ANIMATION — isolated to the yellow hero artwork only */
+    .physics-study-scene{position:absolute;z-index:3;top:76px;left:13px;right:13px;height:300px;min-width:0;pointer-events:none;isolation:isolate;overflow:visible}
+    .physics-study-scene:before{content:"";position:absolute;z-index:0;left:50%;top:49%;width:min(68%,220px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.92) 0%,rgba(255,239,137,.55) 45%,rgba(255,214,0,.05) 73%,transparent 75%);filter:blur(1px);animation:study-aura 5.5s ease-in-out infinite}
+    .newton-study{position:absolute;z-index:2;left:50%;top:2px;width:min(66%,224px);height:258px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 5px 0 rgba(32,25,54,.12))}
+    .newton-study svg{display:block;width:100%;height:100%;overflow:visible}
+    .newton-label{position:absolute;z-index:6;left:50%;top:4px;transform:translateX(-50%);white-space:nowrap;padding:5px 8px;border:1.5px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);font:900 .48rem/1 var(--display);letter-spacing:.08em;box-shadow:2px 3px 0 var(--ink)}
+    .newton-apple{transform-box:fill-box;transform-origin:center;animation:newton-apple-drop 4.4s ease-in-out infinite}
+    .newton-hit-spark{opacity:0;transform-box:fill-box;transform-origin:center;animation:newton-impact 4.4s ease-in-out infinite}
+    .study-side{position:absolute;z-index:5;width:64px;min-height:72px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:3px;padding:5px 3px 4px;border:1.8px solid var(--ink);border-radius:14px;background:linear-gradient(145deg,#fff 0%,#f2ebff 100%);box-shadow:4px 5px 0 var(--ink),inset 1px 1px 0 rgba(255,255,255,.95);color:var(--ink);transform-style:preserve-3d}
+    .study-side b{font:900 .43rem/1 var(--display);letter-spacing:.1em;text-align:center}
+    .study-atom-side{left:0;top:24px;transform:rotate(-8deg);animation:study-tile-float 4.6s ease-in-out infinite}
+    .mini-atom{position:relative;width:46px;height:43px;display:grid;place-items:center;perspective:300px}
+    .mini-atom-core{width:10px;height:10px;border-radius:50%;background:var(--pink);border:1.5px solid var(--ink);box-shadow:0 0 0 3px rgba(255,22,84,.12)}
+    .mini-atom-orbit{position:absolute;left:50%;top:50%;width:41px;height:17px;border:1.5px solid var(--mint);border-radius:50%;transform:translate(-50%,-50%) rotate(-25deg);animation:mini-atom-spin 3.5s linear infinite}
+    .mini-atom-orbit.orbit-b{width:41px;height:17px;border-color:var(--pink);transform:translate(-50%,-50%) rotate(35deg);animation-direction:reverse}
+    .mini-atom-orbit.orbit-c{width:41px;height:17px;border-color:#d6a900;transform:translate(-50%,-50%) rotate(90deg);animation-duration:4.3s}
+    .mini-atom-orbit:after{content:"";position:absolute;left:50%;top:-3px;width:5px;height:5px;border:1px solid var(--ink);border-radius:50%;background:var(--yellow)}
+    .study-pendulum-side{right:0;top:17px;min-height:91px;transform:rotate(7deg);animation:study-tile-float 4.8s ease-in-out infinite -1.2s}
+    .pendulum-stage{position:relative;width:47px;height:61px;border-top:3px solid var(--ink);border-radius:5px 5px 0 0;background:linear-gradient(180deg,rgba(231,220,255,.5),rgba(255,255,255,0));overflow:hidden}
+    .pendulum-pivot{position:absolute;z-index:2;left:calc(50% - 4px);top:-4px;width:8px;height:8px;border:1.5px solid var(--ink);border-radius:50%;background:var(--yellow)}
+    .pendulum-arm{position:absolute;left:calc(50% - 1.5px);top:1px;width:3px;height:40px;background:var(--ink);border-radius:3px;transform-origin:top center;animation:pendulum-swing 1.55s ease-in-out infinite alternate}
+    .pendulum-bob{position:absolute;left:50%;bottom:-8px;width:18px;height:18px;border:2px solid var(--ink);border-radius:50%;background:linear-gradient(135deg,#fff 0%,var(--pink) 75%);box-shadow:2px 3px 0 var(--ink);transform:translateX(-50%)}
+    .study-sst-side{left:0;bottom:7px;transform:rotate(6deg);animation:study-tile-float 5.1s ease-in-out infinite -.8s}
+    .sst-globe{position:relative;width:43px;height:43px;display:grid;place-items:center;overflow:hidden;border:2px solid var(--ink);border-radius:50%;background:linear-gradient(140deg,#72ddff 0%,#1188cb 72%,#2863a3 100%);box-shadow:inset -5px -4px 0 rgba(32,25,54,.14),inset 3px 3px 0 rgba(255,255,255,.6);animation:sst-globe-turn 6s linear infinite}
+    .sst-land{position:absolute;background:#00c99a;border:1px solid rgba(32,25,54,.3);border-radius:50% 35% 42% 30%;}
+    .sst-land.land-a{width:15px;height:18px;left:6px;top:5px;transform:rotate(25deg)}
+    .sst-land.land-b{width:12px;height:14px;right:5px;bottom:6px;transform:rotate(-24deg)}
+    .sst-latitude,.sst-longitude{position:absolute;inset:7px 1px;border:1px solid rgba(255,255,255,.75);border-radius:50%}
+    .sst-longitude{inset:1px 10px}
+    .study-math-side{right:0;bottom:8px;min-height:76px;transform:rotate(-6deg);animation:study-tile-float 4.3s ease-in-out infinite -2s}
+    .math-mini-stage{position:relative;width:50px;height:45px;display:flex;align-items:center;justify-content:center;gap:3px}
+    .math-pi{font:900 1.35rem/1 var(--display);color:var(--pink);text-shadow:1px 2px 0 var(--ink);animation:math-symbol-bob 2.4s ease-in-out infinite}
+    .math-sum{font:900 1rem/1 var(--display);color:#009a79;animation:math-symbol-bob 2.4s ease-in-out infinite -.8s}
+    .math-triangle{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid var(--yellow);filter:drop-shadow(1.5px 2px 0 var(--ink));animation:math-triangle-turn 4.2s ease-in-out infinite}
+    .physics-study-scene .study-side:after{content:"";position:absolute;inset:4px;border:1px dashed rgba(32,25,54,.2);border-radius:10px;pointer-events:none}
+    @keyframes mini-atom-spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+    @keyframes pendulum-swing{0%{transform:rotate(-31deg)}100%{transform:rotate(31deg)}}
+    @keyframes sst-globe-turn{0%,100%{filter:saturate(1);transform:rotate(-5deg)}50%{filter:saturate(1.25);transform:rotate(5deg)}}
+    @keyframes study-tile-float{0%,100%{translate:0 0}50%{translate:0 -6px}}
+    @keyframes math-symbol-bob{0%,100%{translate:0 2px;rotate:-5deg}50%{translate:0 -4px;rotate:6deg}}
+    @keyframes math-triangle-turn{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(18deg) scale(1.12)}}
+    @keyframes newton-apple-drop{0%,18%{transform:translate(0,0) rotate(0)}29%{transform:translate(5px,24px) rotate(20deg)}33%{transform:translate(4px,15px) rotate(-8deg)}38%{transform:translate(7px,25px) rotate(18deg)}46%{transform:translate(7px,25px) rotate(18deg)}55%{transform:translate(7px,25px) rotate(18deg);opacity:1}62%{transform:translate(0,0) rotate(0);opacity:0}70%,100%{transform:translate(0,0) rotate(0);opacity:1}}
+    @keyframes newton-impact{0%,28%,56%,100%{opacity:0;transform:scale(.45) rotate(-20deg)}32%,38%{opacity:1;transform:scale(1.15) rotate(10deg)}44%{opacity:.75;transform:scale(.9) rotate(0)}}
+    @keyframes study-aura{0%,100%{opacity:.55;scale:.95}50%{opacity:.95;scale:1.04}}
+    @media(max-width:760px){
+      .physics-study-scene{top:72px;left:10px;right:10px;height:294px}
+      .newton-study{top:6px;width:min(65%,218px);height:250px}
+      .newton-label{top:2px;font-size:.43rem;padding:5px 6px}
+      .study-side{width:57px;min-height:67px;padding:4px 2px;border-radius:12px;box-shadow:3px 4px 0 var(--ink)}
+      .study-side b{font-size:.38rem}
+      .study-atom-side{top:25px;left:0}
+      .study-pendulum-side{top:19px;right:0;min-height:83px}
+      .study-sst-side{bottom:9px;left:0}
+      .study-math-side{bottom:9px;right:0;min-height:68px}
+      .mini-atom{width:41px;height:38px}.mini-atom-orbit,.mini-atom-orbit.orbit-b,.mini-atom-orbit.orbit-c{width:36px}
+      .pendulum-stage{width:41px;height:54px}.pendulum-arm{height:35px}.pendulum-bob{width:16px;height:16px}
+      .sst-globe{width:38px;height:38px}.sst-land.land-a{width:13px;height:15px}.sst-land.land-b{width:10px;height:12px}
+      .math-mini-stage{width:44px;height:39px}.math-pi{font-size:1.16rem}.math-sum{font-size:.9rem}.math-triangle{border-left-width:10px;border-right-width:10px;border-bottom-width:19px}
+    }
+    @media(max-width:390px){.physics-study-scene{top:69px;left:8px;right:8px;height:290px}.newton-study{width:min(64%,205px);height:246px}.study-side{width:52px;min-height:62px}.study-pendulum-side{min-height:78px}.study-math-side{min-height:64px}}
     @media(prefers-reduced-motion:reduce){.physics-study-scene *,.physics-study-scene:before{animation:none!important}}
 
 </style>
@@ -575,18 +598,84 @@
           <div class="floating-sticker sticker-c"><span>CLASSES 4–12</span> LEARNING</div>
           <div class="hero-board" data-tilt>
             <div class="board-top"><span class="tiny-chip" id="heroArtLabel">THE EV METHOD</span><span class="board-stars" aria-hidden="true">✦ ✦</span></div>
-            <div class="physics-study-scene" role="img" aria-label="Animated science illustration with an atom, open book, light bulb, laboratory flask and physics formula">
-              <div class="study-orbit study-orbit-one" aria-hidden="true"><span class="study-electron"></span></div>
-              <div class="study-orbit study-orbit-two" aria-hidden="true"><span class="study-electron"></span></div>
-              <div class="study-orbit study-orbit-three" aria-hidden="true"><span class="study-electron"></span></div>
-              <div class="study-atom-core" aria-hidden="true"><span>⚛</span></div>
-              <div class="study-object study-book" aria-hidden="true"><span class="study-object-icon">📘</span><b>LEARN</b><i></i></div>
-              <div class="study-object study-bulb" aria-hidden="true"><span class="study-object-icon">💡</span><b>IDEAS</b><i></i></div>
-              <div class="study-object study-flask" aria-hidden="true"><span class="study-object-icon">🧪</span><b>EXPLORE</b><i></i></div>
-              <div class="study-formula study-formula-one" aria-hidden="true"><strong>F = ma</strong><small>FORCE · MOTION</small></div>
-              <div class="study-formula study-formula-two" aria-hidden="true"><strong>E = mc²</strong></div>
-              <span class="study-spark study-spark-one" aria-hidden="true">✦</span>
-              <span class="study-spark study-spark-two" aria-hidden="true">✧</span>
+            <div class="physics-study-scene" role="img" aria-label="Five animated study illustrations: Newton reading under a tree as an apple falls, an atom, a pendulum, a globe for social studies, and mathematics symbols">
+              <div class="study-side study-atom-side" aria-hidden="true">
+                <div class="mini-atom"><span class="mini-atom-core"></span><span class="mini-atom-orbit"></span><span class="mini-atom-orbit orbit-b"></span><span class="mini-atom-orbit orbit-c"></span></div>
+                <b>ATOM</b>
+              </div>
+              <div class="study-side study-pendulum-side" aria-hidden="true">
+                <div class="pendulum-stage"><span class="pendulum-pivot"></span><span class="pendulum-arm"><span class="pendulum-bob"></span></span></div>
+                <b>PENDULUM</b>
+              </div>
+              <div class="newton-study" aria-hidden="true">
+                <span class="newton-label">NEWTON'S APPLE</span>
+                <svg viewBox="0 0 240 280" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                  <defs>
+                    <linearGradient id="newton-tree-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9ed8b"/><stop offset="1" stop-color="#25bd82"/></linearGradient>
+                    <linearGradient id="newton-coat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#866246"/><stop offset="1" stop-color="#4c342d"/></linearGradient>
+                    <linearGradient id="newton-book-page" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf3"/><stop offset="1" stop-color="#dcd4ff"/></linearGradient>
+                  </defs>
+                  <ellipse cx="128" cy="247" rx="93" ry="11" fill="#201936" opacity=".12"/>
+                  <!-- tree and branches -->
+                  <path d="M61 65 C65 112 80 152 69 235 L88 237 C95 176 76 122 80 68Z" fill="#8e552f" stroke="#201936" stroke-width="2.8" stroke-linejoin="round"/>
+                  <path d="M72 100 Q93 70 138 76 M75 79 Q91 54 95 45" fill="none" stroke="#8e552f" stroke-width="10" stroke-linecap="round"/>
+                  <path d="M72 100 Q93 70 138 76 M75 79 Q91 54 95 45" fill="none" stroke="#b87843" stroke-width="4" stroke-linecap="round"/>
+                  <g fill="url(#newton-tree-leaf)" stroke="#201936" stroke-width="2.1">
+                    <circle cx="37" cy="48" r="29"/><circle cx="61" cy="31" r="31"/><circle cx="89" cy="43" r="29"/><circle cx="104" cy="63" r="24"/><circle cx="74" cy="66" r="30"/><circle cx="37" cy="72" r="22"/>
+                  </g>
+                  <g fill="#d8ffb2" opacity=".8"><circle cx="47" cy="29" r="4"/><circle cx="76" cy="20" r="4"/><circle cx="100" cy="46" r="3.5"/><circle cx="35" cy="59" r="3"/></g>
+                  <path d="M18 236 Q75 226 111 237 T222 236" fill="none" stroke="#248f68" stroke-width="4" stroke-linecap="round"/>
+                  <!-- seated Newton-inspired scholar -->
+                  <path d="M125 197 Q113 213 124 226 L157 230 Q167 218 152 203Z" fill="#5c483a" stroke="#201936" stroke-width="2.5"/>
+                  <path d="M147 202 Q166 207 184 222 L202 223 Q211 228 202 234 L176 235 Q160 225 145 221Z" fill="#48362e" stroke="#201936" stroke-width="2.5"/>
+                  <path d="M126 219 Q111 229 115 238 L148 239 Q157 235 148 229Z" fill="#382d3d" stroke="#201936" stroke-width="2.5"/>
+                  <path d="M122 145 Q145 131 166 147 L176 191 Q157 207 128 193Z" fill="url(#newton-coat)" stroke="#201936" stroke-width="2.8" stroke-linejoin="round"/>
+                  <path d="M143 145 L154 163 L164 145 L157 139 L149 139Z" fill="#fffaf1" stroke="#201936" stroke-width="1.8"/>
+                  <path d="M151 161 L157 172 L164 161" fill="none" stroke="#d9d0c5" stroke-width="2"/>
+                  <!-- arms reaching for the open book -->
+                  <path d="M130 157 Q136 163 150 177 L164 177" fill="none" stroke="#8e5c43" stroke-width="10" stroke-linecap="round"/>
+                  <path d="M166 158 Q172 167 177 177" fill="none" stroke="#8e5c43" stroke-width="9" stroke-linecap="round"/>
+                  <path d="M130 157 Q136 163 150 177 L164 177" fill="none" stroke="#d4b6a0" stroke-width="3" stroke-linecap="round"/>
+                  <!-- head, historic powdered curls and face -->
+                  <path d="M130 117 Q127 101 143 99 Q163 97 170 113 L167 132 Q158 146 143 138 Q132 133 130 117Z" fill="#eeb38e" stroke="#201936" stroke-width="2.5"/>
+                  <g fill="#f5f0e7" stroke="#201936" stroke-width="1.5">
+                    <circle cx="132" cy="109" r="9"/><circle cx="137" cy="101" r="9"/><circle cx="147" cy="99" r="9"/><circle cx="157" cy="102" r="9"/><circle cx="166" cy="109" r="8"/><circle cx="132" cy="121" r="7"/><circle cx="166" cy="122" r="7"/>
+                  </g>
+                  <path d="M137 117 Q141 114 145 117 M153 117 Q157 114 161 117" fill="none" stroke="#201936" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="142" cy="119" r="1.4" fill="#201936"/><circle cx="157" cy="119" r="1.4" fill="#201936"/>
+                  <path d="M149 120 L147 126 L151 127 M144 132 Q151 135 157 130" fill="none" stroke="#9b5e4b" stroke-width="1.8" stroke-linecap="round"/>
+                  <!-- open book clearly held in front -->
+                  <g stroke="#201936" stroke-width="2.2" stroke-linejoin="round">
+                    <path d="M143 171 Q154 167 164 174 L164 193 Q153 187 143 191Z" fill="url(#newton-book-page)"/>
+                    <path d="M164 174 Q177 167 190 172 L190 190 Q177 187 164 193Z" fill="#fffdf4"/>
+                    <path d="M164 174 L164 193" fill="none" stroke="#8d7ab8" stroke-width="2"/>
+                    <path d="M148 176 L158 177 M148 181 L158 182 M171 176 L183 175 M171 181 L183 180" stroke="#8d7ab8" stroke-width="1.1" stroke-linecap="round"/>
+                  </g>
+                  <path d="M160 176 Q166 174 172 176" fill="none" stroke="#eeb38e" stroke-width="6" stroke-linecap="round"/>
+                  <!-- apple falls from the branch, bounces gently on his hair -->
+                  <g transform="translate(10 0)">
+                  <g class="newton-apple">
+                    <path d="M130 76 Q130 69 134 65" fill="none" stroke="#5a3b24" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M134 66 Q142 60 146 67 Q140 73 134 66Z" fill="#00c99a" stroke="#201936" stroke-width="1.4"/>
+                    <path d="M121 78 C118 71 124 67 130 70 C136 66 143 71 139 79 C138 88 130 92 130 92 C125 90 121 85 121 78Z" fill="#ff315e" stroke="#201936" stroke-width="2"/>
+                    <ellipse cx="126" cy="75" rx="2.2" ry="4" fill="#ffb2bc" transform="rotate(-25 126 75)"/>
+                  </g>
+                  </g>
+                  <g class="newton-hit-spark" fill="#ffd600" stroke="#201936" stroke-width="1.5" stroke-linejoin="round">
+                    <path d="M172 101 L177 110 L187 108 L180 116 L185 125 L175 120 L168 128 L169 117 L160 112 L170 111Z"/>
+                    <path d="M189 119 L192 125 L199 124 L194 129 L197 136 L190 132 L186 137 L187 130 L181 127 L188 126Z" fill="#ff1654"/>
+                  </g>
+                  <g fill="#201936" opacity=".65"><circle cx="112" cy="103" r="2"/><circle cx="193" cy="146" r="2"/><circle cx="109" cy="188" r="1.5"/></g>
+                </svg>
+              </div>
+              <div class="study-side study-sst-side" aria-hidden="true">
+                <div class="sst-globe"><span class="sst-land land-a"></span><span class="sst-land land-b"></span><span class="sst-latitude"></span><span class="sst-longitude"></span></div>
+                <b>SST · WORLD</b>
+              </div>
+              <div class="study-side study-math-side" aria-hidden="true">
+                <div class="math-mini-stage"><span class="math-pi">π</span><span class="math-sum">∑x</span><span class="math-triangle"></span></div>
+                <b>MATHS · LOGIC</b>
+              </div>
             </div>
             <div class="hero-step-row" id="heroArtSteps" aria-label="Our learning steps"><span class="hero-step-chip">UNDERSTAND</span><span class="hero-step-chip">PRACTISE</span><span class="hero-step-chip">ACHIEVE</span></div>
             <div class="board-phrase"><small id="heroArtEyebrow">OUR LEARNING PROMISE</small><strong><span class="board-headline" id="heroArtHeadline">Think. Learn.</span><br><span id="heroArtHighlight">Shine with confidence.</span></strong></div>
