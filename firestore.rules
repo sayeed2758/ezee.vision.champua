@@ -4,7 +4,7 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email_verified == true
-        && request.auth.token.email == 'REPLACE_WITH_YOUR_ADMIN_EMAIL';
+        && request.auth.token.email == 'creativesayeedd@gmail.com';
     }
 
     match /site/content {

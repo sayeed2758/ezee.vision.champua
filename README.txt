@@ -41,8 +41,8 @@ FIREBASE SETUP (ONE-TIME)
 3. Open firebase-config.js and replace each placeholder with the matching values from your own web-app configuration. Copy the storageBucket value exactly as Firebase shows it. Do not paste private server credentials or service-account keys into this file.
 4. In Firebase Console > Authentication > Sign-in method, enable Email/Password. In Authentication > Users, create the admin account using your own email and a strong unique password. The panel has no public account-registration page.
 5. If necessary, add your deployed Vercel domain under Authentication > Settings > Authorized domains.
-6. In Firebase Console > Firestore Database, create a database. Open its Rules tab and paste the content from firestore.rules. Replace REPLACE_WITH_YOUR_ADMIN_EMAIL with the exact email address used for the admin account, then Publish the rules.
-7. In Firebase Console > Storage, create a bucket. Open Storage > Rules, paste storage.rules, replace REPLACE_WITH_YOUR_ADMIN_EMAIL with the same admin email, and Publish the rules.
+6. In Firebase Console > Firestore Database, create a database. Open its Rules tab and paste the content from firestore.rules. The supplied rules file is configured for creativesayeedd@gmail.com; verify that this matches your verified Firebase admin account, then Publish the rules.
+7. In Firebase Console > Storage, create a bucket. Open Storage > Rules, paste storage.rules, verify that the rule email is the same admin email, and Publish the rules.
 8. Upload every file in this folder to the root of your GitHub repository, including public-cms.js, default-content.js, firebase-config.js, admin.html, index.html and the rule files. Commit/push, then deploy or wait for Vercel's deployment to finish.
 9. Open your deployed website, then /admin.html. In Cloud setup, sign in with the admin email and password. On the first sign-in the panel sends an email-verification link; verify it, then sign in again.
 10. Edit content, save a local draft, Preview, then Publish to website. Open the public homepage in another browser/incognito window to confirm the cloud-published content.
@@ -66,3 +66,8 @@ Use Download backup JSON before major edits. Import backup JSON to restore a pri
 ANDROID WORKFLOW
 ----------------
 You can use this from Android Chrome after the folder is deployed to Vercel. Upload/replace files in your GitHub repository using the mobile browser. Once set up, the day-to-day workflow is only: open /admin.html > edit > preview > publish. For first-time Firebase setup, keep this README open while configuring Firebase Console.
+
+
+TROUBLESHOOTING PUBLISH
+-----------------------
+The admin panel now shows a Publishing… state and a more specific error. If image upload fails, create Firebase Storage and publish storage.rules. If Firestore denies the write, create Firestore Database and publish firestore.rules. Both rule files are configured for creativesayeedd@gmail.com; change this if your actual verified admin email is different. See FIREBASE-FIX-STEPS.txt for the exact steps.
