@@ -16,8 +16,56 @@ const formatPhone = v => { const d = intlDigits(v); return d.length === 12 && d.
 const waLink = (number, message = '') => `https://wa.me/${intlDigits(number)}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 const splitLines = value => String(value || '').split('\n').map(v => esc(v)).join('<br>');
 
+function deepMergeDefaults(data, defaults) {
+  if (Array.isArray(defaults)) {
+    if (!Array.isArray(data)) return defaults.map(item => item && typeof item === 'object' ? deepMergeDefaults({}, item) : item);
+    if (!defaults.length) return data;
+    return data.map((item, i) => {
+      const template = defaults[Math.min(i, defaults.length - 1)];
+      return template && typeof template === 'object' && item && typeof item === 'object' && !Array.isArray(item)
+        ? deepMergeDefaults(item, template) : item;
+    });
+  }
+  if (defaults && typeof defaults === 'object') {
+    const input = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+    const out = {};
+    for (const key of new Set([...Object.keys(defaults), ...Object.keys(input)])) {
+      out[key] = key in input ? (key in defaults ? deepMergeDefaults(input[key], defaults[key]) : input[key]) : deepMergeDefaults(undefined, defaults[key]);
+    }
+    return out;
+  }
+  return data === undefined ? defaults : data;
+}
+function normalizeContent(data) {
+  const c = deepMergeDefaults(data || {}, defaultContent);
+  // Upgrade only unchanged older default values; preserve genuinely customised content.
+  const legacyStory = [
+    { kicker: 'The beginning', title: 'A purpose beyond the classroom', description: 'A coaching journey built around helping learners understand their subjects, ask questions freely, and build a stronger academic foundation.' },
+    { kicker: 'The teaching approach', title: 'Make every concept count', description: 'Step-by-step explanations, relatable examples, revision, and regular practice become part of the learning routine.' },
+    { kicker: 'Creating learning tools', title: 'Practice that continues at home', description: 'Worksheets, handwritten notes, Daily Practice Papers, and digital teaching resources support students beyond class time.' },
+    { kicker: 'The vision ahead', title: 'A trusted learning community', description: 'Keep improving the learning experience with thoughtful teaching, useful resources, and personal attention to student growth.' }
+  ];
+  const oldStory = data?.story?.timeline;
+  if (Array.isArray(oldStory) && oldStory.length === legacyStory.length && oldStory.every((item, i) => legacyStory[i].kicker === item?.kicker && legacyStory[i].title === item?.title && legacyStory[i].description === item?.description)) c.story.timeline = defaultContent.story.timeline;
+  if (data?.story?.description === 'EZEE VISION CHAMPUA is shaped by a simple belief: when concepts become clear and students get consistent support, confidence follows.') c.story.description = defaultContent.story.description;
+  if (data?.hero?.note === 'Concept-first teaching · Classes 4–10') c.hero.note = defaultContent.hero.note;
+  if (data?.cta?.primaryLabel === 'Ask about admission') c.cta.primaryLabel = defaultContent.cta.primaryLabel;
+  if (data?.cta?.secondaryLabel === 'Explore learning paths') c.cta.secondaryLabel = defaultContent.cta.secondaryLabel;
+  const oldClasses = ['Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10','Other / General enquiry'];
+  if (Array.isArray(data?.contact?.classOptions) && JSON.stringify(data.contact.classOptions) === JSON.stringify(oldClasses)) c.contact.classOptions = [...defaultContent.contact.classOptions];
+  if (!data?.contact?.mapsUrl && (!data?.contact?.address || data.contact.address === 'Jamudalak, Champua, Odisha')) {
+    c.contact.address = defaultContent.contact.address;
+    c.contact.mapsUrl = defaultContent.contact.mapsUrl;
+  }
+  if (!c.educator.badge) c.educator.badge = 'FOUNDER & EDUCATOR';
+  if (!c.contact.messageGreeting) c.contact.messageGreeting = 'Hello Sir';
+  if (!Array.isArray(c.teachers)) c.teachers = [];
+  while (c.teachers.length < 3) c.teachers.push(JSON.parse(JSON.stringify(defaultContent.teachers[c.teachers.length])));
+  return c;
+}
+
 function renderSite(data) {
-  const c = data || defaultContent;
+  const c = normalizeContent(data || defaultContent);
   const root = document.documentElement;
   Object.entries(c.theme || {}).forEach(([key, value]) => {
     if (/^(#[0-9a-f]{3,8}|rgb|hsl)/i.test(String(value))) root.style.setProperty(`--${key}`, value);
@@ -49,6 +97,12 @@ function renderSite(data) {
   }
   const note = $('.hero-note > span');
   if (note) note.textContent = c.hero?.note || '';
+  const artLabel = $('#heroArtLabel'); if (artLabel) artLabel.textContent = c.hero?.artLabel || 'THE EV METHOD';
+  const artEyebrow = $('#heroArtEyebrow'); if (artEyebrow) artEyebrow.textContent = c.hero?.artEyebrow || 'OUR LEARNING PROMISE';
+  const artHeadline = $('#heroArtHeadline'); if (artHeadline) artHeadline.textContent = c.hero?.artHeadline || 'Think. Learn.';
+  const artHighlight = $('#heroArtHighlight'); if (artHighlight) artHighlight.textContent = c.hero?.artHighlight || 'Shine with confidence.';
+  const artSteps = $('#heroArtSteps');
+  if (artSteps) artSteps.innerHTML = (c.hero?.artSteps || [{label:'UNDERSTAND'},{label:'PRACTISE'},{label:'ACHIEVE'}]).slice(0,4).map((step,i) => `<div class="book">${esc(step.label || `STEP ${i+1}`)}</div>`).join('');
 
   const coursesSection = $('#courses');
   const coursesGrid = $('#courses .grid-3');
@@ -82,23 +136,38 @@ function renderSite(data) {
     const heading = $('h2', teamHead); if (heading) heading.innerHTML = `${esc(c.educator?.sectionTitleLead || '')} <span class="accent">${esc(c.educator?.sectionTitleHighlight || '')}</span>`;
     const lead = $('.lead', teamHead); if (lead) lead.textContent = c.educator?.sectionDescription || '';
   }
-  const portrait = $('.portrait-panel');
-  if (portrait) {
-    if (c.educator?.photoUrl) portrait.innerHTML = `<img class="educator-real-photo" src="${esc(safeUrl(c.educator.photoUrl))}" alt="${esc(c.educator.name || 'Educator')}" loading="lazy"><div class="portrait-caption">FOUNDER & EDUCATOR<small>${esc(c.brand?.name || 'EZEE VISION CHAMPUA')}</small></div>`;
-    else portrait.innerHTML = `<div class="portrait-orbit"></div><div class="portrait-avatar"><div class="avatar-head"></div><div class="avatar-body"></div></div><div class="portrait-caption">FOUNDER & EDUCATOR<small>${esc(c.brand?.name || 'EZEE VISION CHAMPUA')}</small></div>`;
-    portrait.setAttribute('aria-label', `${c.educator?.name || 'Educator'} profile photo`);
+  const educatorTrack = $('#educatorCarouselTrack');
+  if (educatorTrack) {
+    const founder = { ...(c.educator || {}), displayName: c.educator?.displayName || '', badge: c.educator?.badge || 'FOUNDER & EDUCATOR', primary: true };
+    const profiles = [founder, ...(Array.isArray(c.teachers) ? c.teachers : []).map(t => ({...t, primary:false, badge:t.badge || 'EDUCATOR', displayName:t.displayName || '', placeholder: !(t.name || t.photoUrl || t.bio || t.quote || (Array.isArray(t.qualifications) && t.qualifications.some(Boolean))) }))];
+    while (profiles.length < 4) profiles.push({ name:'', displayName:'', role:'Add this educator from the admin panel.', bio:'Upload an approved educator photo and fill in the profile details in Educator & Teachers.', badge:'EDUCATOR PROFILE', photoUrl:'', qualifications:[], quote:'', primary:false, placeholder:true });
+    educatorTrack.innerHTML = profiles.map((p,i) => {
+      const fullName = p.name || (p.placeholder ? 'Educator profile coming soon' : 'Educator');
+      const subName = p.displayName || '';
+      const role = p.role || (p.placeholder ? 'Add role / subjects in admin' : 'Educator');
+      const quals = Array.isArray(p.qualifications) ? p.qualifications : String(p.qualifications || '').split(',');
+      const hasRealContent = Boolean(p.name || p.photoUrl || p.role || p.bio || p.quote || quals.filter(Boolean).length);
+      const photoMarkup = p.photoUrl
+        ? `<img src="${esc(safeUrl(p.photoUrl))}" alt="${esc(fullName)}" loading="lazy">`
+        : `<div class="educator-photo-placeholder"><span class="placeholder-icon">${p.placeholder ? '＋' : 'EV'}</span><span>${p.placeholder ? 'Add educator photo in admin' : 'Upload a real educator photo in admin'}</span></div>`;
+      const badge = p.badge || (p.primary ? 'FOUNDER & EDUCATOR' : 'EDUCATOR');
+      const points = p.primary && Array.isArray(c.educator?.highlights) ? c.educator.highlights : [];
+      return `<article class="educator-slide" role="group" aria-roledescription="slide" aria-label="Educator ${i+1} of ${profiles.length}">
+        <div class="educator-photo-frame">${photoMarkup}<span class="educator-badge">${esc(badge)}</span></div>
+        <div class="educator-copy"><span class="eyebrow"><span class="dot"></span> ${p.primary ? 'Meet your founder' : (hasRealContent ? 'Meet your educator' : 'Team profile slot')}</span>
+          <h3>${esc(fullName)}${subName ? `<span class="educator-display-name">(${esc(subName)})</span>` : ''}</h3>
+          <p class="educator-role">${esc(role)}</p>
+          ${p.primary && quals.filter(Boolean).length ? `<div class="qualifications">${quals.filter(Boolean).map(q=>`<span class="qualification">${esc(q)}</span>`).join('')}</div>` : ''}
+          ${!p.primary && quals.filter(Boolean).length ? `<div class="qualifications">${quals.filter(Boolean).map(q=>`<span class="qualification">${esc(q)}</span>`).join('')}</div>` : ''}
+          ${p.primary && p.quote ? `<blockquote class="quote">“${esc(p.quote)}”</blockquote>` : p.quote ? `<blockquote class="quote">“${esc(p.quote)}”</blockquote>` : ''}
+          ${!p.primary && p.bio ? `<p class="educator-bio">${esc(p.bio)}</p>` : ''}
+          ${p.primary && points.length ? `<div class="team-points">${points.map(pt=>`<div class="team-point"><span class="point-icon">${esc(pt.icon || '✦')}</span><strong>${esc(pt.title || '')}</strong><small>${esc(pt.description || '')}</small></div>`).join('')}</div>` : ''}
+          ${p.placeholder ? '<p class="educator-bio">This is an empty sample slot—not a real staff profile. Add the teacher name, role, photo, qualifications, and bio through the admin panel.</p>' : ''}
+        </div>
+      </article>`;
+    }).join('');
+    setupCarousel('educator', $('#educatorCarousel'), educatorTrack, $('#educatorCarouselDots'), 5500);
   }
-  const teamCopy = $('.team-copy');
-  if (teamCopy) {
-    const eyebrow = $('.eyebrow', teamCopy); if (eyebrow) eyebrow.textContent = 'Meet your educator';
-    const name = $('.name', teamCopy); if (name) name.innerHTML = `${esc(c.educator?.name || '')}<br><span class="ink-accent">(${esc(c.educator?.displayName || '')})</span>`;
-    const role = $('.lead', teamCopy); if (role) role.textContent = c.educator?.role || '';
-    const quals = $('.qualifications', teamCopy); if (quals) quals.innerHTML = (c.educator?.qualifications || []).filter(Boolean).map(q => `<span class="qualification">${esc(q)}</span>`).join('');
-    const quote = $('.quote', teamCopy); if (quote) quote.textContent = `“${c.educator?.quote || ''}”`;
-    const points = $('.team-points', teamCopy); if (points) points.innerHTML = (c.educator?.highlights || []).map(p => `<div class="team-point"><span class="point-icon">${esc(p.icon || '✦')}</span><strong>${esc(p.title || '')}</strong><small>${esc(p.description || '')}</small></div>`).join('');
-  }
-  const extraTeachers = $('#extraTeachers');
-  if (extraTeachers) extraTeachers.innerHTML = (c.teachers || []).map(t => `<article class="card extra-teacher-card reveal" data-tilt><div class="extra-teacher-photo">${t.photoUrl ? `<img src="${esc(safeUrl(t.photoUrl))}" alt="${esc(t.name || 'Teacher')}" loading="lazy">` : `<span>EV</span>`}</div><div class="extra-teacher-copy"><h3>${esc(t.name || '')}</h3><p class="teacher-role">${esc(t.role || '')}</p><p>${esc(t.bio || '')}</p><div class="qualifications">${(Array.isArray(t.qualifications) ? t.qualifications : String(t.qualifications || '').split(',')).filter(Boolean).map(q => `<span class="qualification">${esc(q)}</span>`).join('')}</div>${t.quote ? `<blockquote class="quote">“${esc(t.quote)}”</blockquote>` : ''}</div></article>`).join('');
 
   const galleryHead = $('#gallery .section-head');
   if (galleryHead) {
@@ -107,9 +176,14 @@ function renderSite(data) {
     const lead = $('.lead', galleryHead); if (lead) lead.textContent = c.gallery?.description || '';
   }
   const galleryGrid = $('.gallery-grid');
-  if (galleryGrid) galleryGrid.innerHTML = (c.gallery?.items || []).map((g, i) => `<article class="gallery-tile reveal ${i ? `delay-${Math.min(i % 3, 2)}` : ''}" data-tilt>${g.imageUrl ? `<img class="gallery-photo" src="${esc(safeUrl(g.imageUrl))}" alt="${esc(g.alt || g.title || 'Coaching gallery photo')}" loading="lazy">` : `<span class="not-photo-note">Add a real photo in admin</span><div class="tile-illustration" style="font-size:${i === 0 ? '5rem' : '4rem'}">${esc(g.icon || '📚')}</div>`}<div class="tile-content"><h3>${esc(g.title || '')}</h3><p>${esc(g.description || '')}</p></div></article>`).join('');
-  const galleryNote = $('#gallery .form-hint'); if (galleryNote) { const items = c.gallery?.items || []; galleryNote.textContent = items.some(g => !g.imageUrl) ? 'Cards without an uploaded image use a decorative placeholder. Add real, approved coaching photos from the admin panel.' : 'Gallery photos should be authentic coaching images shared with permission.'; galleryNote.style.display = items.length && items.every(g => g.imageUrl) ? 'none' : ''; }
-  const educatorNote = $('#teachers > .wrap > .form-hint'); if (educatorNote) educatorNote.style.display = c.educator?.photoUrl ? 'none' : '';
+  const galleryItems = Array.isArray(c.gallery?.items) ? c.gallery.items : [];
+  if (galleryGrid) {
+    galleryGrid.innerHTML = `<div class="gallery-slider-viewport" role="region" aria-roledescription="carousel" aria-label="EZEE VISION learning gallery"><div class="gallery-slider-track" id="gallerySliderTrack">${galleryItems.map((g,i) => `<article class="gallery-slide" role="group" aria-roledescription="slide" aria-label="Gallery item ${i+1} of ${galleryItems.length}"><div class="gallery-media">${g.imageUrl ? `<img src="${esc(safeUrl(g.imageUrl))}" alt="${esc(g.alt || g.title || 'EZEE VISION CHAMPUA learning photo')}" loading="lazy">` : `<div class="gallery-placeholder"><span class="gallery-placeholder-icon">${esc(g.icon || '📚')}</span><span>Add a real approved photo for “${esc(g.title || 'this gallery item')}” in the admin panel</span></div>`}</div><div class="gallery-slide-caption"><div><h3>${esc(g.title || 'Learning moment')}</h3><p>${esc(g.description || '')}</p></div><span class="gallery-slide-index">${String(i+1).padStart(2,'0')} / ${String(galleryItems.length).padStart(2,'0')}</span></div></article>`).join('')}</div></div>
+      <div class="carousel-controls gallery-controls"><button type="button" class="carousel-arrow" data-carousel-prev="gallery" aria-label="Previous gallery photo">←</button><div class="carousel-dots" id="galleryCarouselDots" aria-label="Choose gallery photo"></div><button type="button" class="carousel-arrow" data-carousel-next="gallery" aria-label="Next gallery photo">→</button></div>`;
+    if (!galleryItems.length) galleryGrid.innerHTML = '<p class="form-hint">Add gallery items from the admin panel to start the slideshow.</p>';
+    else setupCarousel('gallery', $('#gallery'), $('#gallerySliderTrack'), $('#galleryCarouselDots'), 6500);
+  }
+  const galleryNote = $('#gallery .form-hint'); if (galleryNote) { const items = galleryItems; galleryNote.textContent = items.some(g => !g.imageUrl) ? 'Slides without a photo show a clearly marked placeholder. Upload real, approved classroom or learning-resource photos from the admin panel.' : 'Gallery photos should be authentic coaching images shared with permission.'; galleryNote.style.display = items.length && items.every(g => g.imageUrl) ? 'none' : ''; }
 
   const contactSection = $('#contact');
   const contactHead = $('.contact-grid .reveal-left');
@@ -126,14 +200,14 @@ function renderSite(data) {
     if (w) entries.push(`<a class="contact-line" href="${waLink(w)}" target="_blank" rel="noopener"><span class="iconbox">💬</span><span>WhatsApp us<small>${esc(formatPhone(w))}</small></span></a>`);
     if (phone1) entries.push(`<a class="contact-line" href="tel:+${esc(intlDigits(phone1))}"><span class="iconbox">☎</span><span>Call for enquiries<small>${esc(formatPhone(phone1))}</small></span></a>`);
     if (phone2) entries.push(`<a class="contact-line" href="tel:+${esc(intlDigits(phone2))}"><span class="iconbox">✆</span><span>Additional contact<small>${esc(formatPhone(phone2))}</small></span></a>`);
-    if (c.contact?.address) entries.push(`<div class="contact-line ${c.contact?.mapsUrl ? 'has-map' : ''}"><span class="iconbox">⌖</span><span>${c.contact?.mapsUrl ? `<a href="${esc(safeUrl(c.contact.mapsUrl))}" target="_blank" rel="noopener">Find our coaching</a>` : 'Find our coaching'}<small>${esc(c.contact.address)}</small></span></div>`);
+    if (c.contact?.address) { const locationContent = `<span class="iconbox">⌖</span><span>Find our coaching<small>${esc(c.contact.address)}</small></span>`; entries.push(c.contact?.mapsUrl ? `<a class="contact-line has-map" href="${esc(safeUrl(c.contact.mapsUrl))}" target="_blank" rel="noopener noreferrer" aria-label="Open EZEE VISION CHAMPUA in Google Maps">${locationContent}</a>` : `<div class="contact-line">${locationContent}</div>`); }
     if (c.contact?.email) entries.push(`<a class="contact-line" href="mailto:${esc(c.contact.email)}"><span class="iconbox">✉</span><span>Email us<small>${esc(c.contact.email)}</small></span></a>`);
     contactList.innerHTML = entries.join('');
   }
   const formTitle = $('#enquiryForm h3'); if (formTitle) formTitle.textContent = c.contact?.formTitle || 'Quick enquiry';
   const formIntro = $('#enquiryForm h3 + p'); if (formIntro) formIntro.textContent = c.contact?.formIntro || 'Fill in the basics and continue on WhatsApp.';
   const formButton = $('#enquiryForm button[type="submit"]'); if (formButton) formButton.innerHTML = `${esc(c.contact?.formButtonLabel || 'Continue on WhatsApp')} <span class="arrow">↗</span>`;
-  const classSelect = $('#studentClass'); if (classSelect) classSelect.innerHTML = `<option value="">Choose a class</option>${(c.contact?.classOptions || []).map(v => `<option>${esc(v)}</option>`).join('')}`;
+  const classSelect = $('#studentClass'); if (classSelect) { const requiredClasses = Array.from({length:9},(_,i)=>`Class ${i+4}`); const options = [...new Set([...requiredClasses, ...(c.contact?.classOptions || []), 'Other / General enquiry'])]; classSelect.innerHTML = `<option value="">Choose a class</option>${options.map(v => `<option>${esc(v)}</option>`).join('')}`; }
   const subjectSelect = $('#studentSubject'); if (subjectSelect) subjectSelect.innerHTML = `<option value="">Choose a subject</option>${(c.contact?.subjectOptions || []).map(v => `<option>${esc(v)}</option>`).join('')}`;
   const footerAbout = $('.footer-about'); if (footerAbout) footerAbout.textContent = c.contact?.footerSummary || '';
   document.querySelectorAll('.footer-brand .brand-name').forEach(el => el.innerHTML = brandMarkup);
@@ -144,7 +218,7 @@ function renderSite(data) {
       const links = linksCols[2].querySelector('.footer-links');
       if (links) {
         const items = [];
-        if (c.contact?.address) items.push(`<span>${esc(c.contact.address)}</span>`);
+        if (c.contact?.address) items.push(c.contact?.mapsUrl ? `<a href="${esc(safeUrl(c.contact.mapsUrl))}" target="_blank" rel="noopener noreferrer">${esc(c.contact.address)} ↗</a>` : `<span>${esc(c.contact.address)}</span>`);
         const wFooter = digits(c.contact?.whatsapp || ''); if (wFooter) items.push(`<a href="${waLink(wFooter)}" target="_blank" rel="noopener">${esc(formatPhone(wFooter))}</a>`);
         if (phone1) items.push(`<a href="tel:+${esc(intlDigits(phone1))}">${esc(formatPhone(phone1))}</a>`);
         if (phone2) items.push(`<a href="tel:+${esc(intlDigits(phone2))}">${esc(formatPhone(phone2))}</a>`);
@@ -176,6 +250,14 @@ function renderSite(data) {
   if (finalCta && c.visibility?.finalCta === false) finalCta.style.display = 'none';
   const visibilityTargets = { courses: '#courses', method: '.method-band', story: '#journey', educator: '#teachers', gallery: '#gallery' };
   Object.entries(visibilityTargets).forEach(([key, selector]) => { const el = $(selector); if (el) el.style.display = c.visibility?.[key] === false ? 'none' : ''; });
+  const legal = c.legal || defaultContent.legal;
+  const renderLegalBody = (intro, items) => `<p class="legal-intro">${esc(intro || '')}</p>${(items || []).map(item => `<section><h3>${esc(item.heading || '')}</h3><p>${esc(item.body || '')}</p></section>`).join('')}`;
+  const privacyTitle = $('#privacyDialogTitle'); if (privacyTitle) privacyTitle.textContent = legal.privacyTitle || 'Privacy Policy';
+  const privacyBody = $('#privacyDialogBody'); if (privacyBody) privacyBody.innerHTML = renderLegalBody(legal.privacyIntro, legal.privacyItems);
+  const termsTitle = $('#termsDialogTitle'); if (termsTitle) termsTitle.textContent = legal.termsTitle || 'Terms and Conditions';
+  const termsBody = $('#termsDialogBody'); if (termsBody) termsBody.innerHTML = renderLegalBody(legal.termsIntro, legal.termsItems);
+  window.EV_WHATSAPP_GREETING = c.contact?.messageGreeting || 'Hello Sir';
+
   renderTestimonials(c);
 
   attachDynamicTilt();
@@ -186,6 +268,51 @@ function renderSite(data) {
   } else document.querySelectorAll('.reveal,.reveal-left').forEach(el => el.classList.add('is-visible'));
 }
 
+
+const carouselStates = new Map();
+let carouselEventsBound = false;
+function setupCarousel(kind, root, track, dots, intervalMs) {
+  if (!root || !track || !dots) return;
+  const previous = carouselStates.get(kind);
+  if (previous?.timer) clearInterval(previous.timer);
+  const slides = [...track.children];
+  let index = 0;
+  if (!slides.length) { dots.innerHTML = ''; return; }
+  if (slides.length === 1) {
+    track.style.transform = 'translateX(0)'; slides[0].setAttribute('aria-hidden','false'); dots.innerHTML = '';
+    root.querySelectorAll(`[data-carousel-prev="${kind}"],[data-carousel-next="${kind}"]`).forEach(b=>b.hidden=true);
+    carouselStates.delete(kind); return;
+  }
+  root.querySelectorAll(`[data-carousel-prev="${kind}"],[data-carousel-next="${kind}"]`).forEach(b=>b.hidden=false);
+  dots.innerHTML = slides.map((_,i)=>`<button type="button" class="carousel-dot" data-carousel-dot="${i}" data-kind="${kind}" aria-label="Go to ${kind==='educator'?'educator profile':'gallery slide'} ${i+1}" aria-current="${i===0?'true':'false'}"></button>`).join('');
+  const render = () => {
+    track.style.transform = `translateX(-${index*100}%)`;
+    [...dots.children].forEach((b,i)=>b.setAttribute('aria-current', String(i===index)));
+    slides.forEach((slide,i)=>slide.setAttribute('aria-hidden',String(i!==index)));
+  };
+  const step = direction => { index = (index + direction + slides.length) % slides.length; render(); restart(); };
+  const go = target => { index = (target + slides.length) % slides.length; render(); restart(); };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const state = {get index(){return index;}, step, go, timer:null, restart:()=>restart()};
+  function stop(){ if (state.timer) clearInterval(state.timer); state.timer=null; }
+  function restart(){ stop(); if (!reduceMotion) state.timer=setInterval(()=>{index=(index+1)%slides.length;render();},intervalMs); }
+  const pause = () => stop(); const resume=()=>{ if(!reduceMotion && !state.timer) restart(); };
+  if (!root.dataset.carouselInteractionsBound) {
+    root.addEventListener('mouseenter', () => carouselStates.get(kind)?.pause());
+    root.addEventListener('mouseleave', () => carouselStates.get(kind)?.resume());
+    root.addEventListener('focusin', () => carouselStates.get(kind)?.pause());
+    root.addEventListener('focusout', () => carouselStates.get(kind)?.resume());
+    root.dataset.carouselInteractionsBound = '1';
+  }
+  state.pause = pause; state.resume = resume;
+  carouselStates.set(kind,state);
+  if (!carouselEventsBound) {
+    document.addEventListener('ev-carousel-step', e => { if (e.detail?.kind) carouselStates.get(e.detail.kind)?.step(Number(e.detail.step) || 1); });
+    document.addEventListener('ev-carousel-go', e => { if (e.detail?.kind) carouselStates.get(e.detail.kind)?.go(Number(e.detail.index) || 0); });
+    carouselEventsBound = true;
+  }
+  render();restart();
+}
 
 function attachDynamicTilt() {
   const finePointer = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
