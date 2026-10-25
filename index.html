@@ -501,66 +501,79 @@
     @media(prefers-reduced-motion:reduce){.educator-photo-orbit,.educator-photo-orbit:after{animation:none!important}}
 
 
-    /* PERMANENT EV METHOD ANIMATION — isolated to the yellow hero artwork only */
-    .physics-study-scene{position:absolute;z-index:3;top:76px;left:13px;right:13px;height:300px;min-width:0;pointer-events:none;isolation:isolate;overflow:visible}
-    .physics-study-scene:before{content:"";position:absolute;z-index:0;left:50%;top:49%;width:min(68%,220px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.92) 0%,rgba(255,239,137,.55) 45%,rgba(255,214,0,.05) 73%,transparent 75%);filter:blur(1px);animation:study-aura 5.5s ease-in-out infinite}
-    .newton-study{position:absolute;z-index:2;left:50%;top:2px;width:min(66%,224px);height:258px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 5px 0 rgba(32,25,54,.12))}
-    .newton-study svg{display:block;width:100%;height:100%;overflow:visible}
-    .newton-label{position:absolute;z-index:6;left:50%;top:4px;transform:translateX(-50%);white-space:nowrap;padding:5px 8px;border:1.5px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);font:900 .48rem/1 var(--display);letter-spacing:.08em;box-shadow:2px 3px 0 var(--ink)}
+    /* FINAL ANIMATION-ONLY TUNE — compact, full scene; no CMS dependency */
+    .physics-study-scene{position:absolute;z-index:3;top:64px;left:10px;right:10px;height:420px;min-width:0;pointer-events:none;isolation:isolate;overflow:visible}
+    .physics-study-scene:before{content:"";position:absolute;z-index:0;left:50%;top:48%;width:min(74%,245px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.86) 0%,rgba(255,239,137,.48) 48%,rgba(255,214,0,.04) 74%,transparent 76%);filter:blur(1px);animation:study-aura 5.5s ease-in-out infinite}
+    .newton-study{position:absolute;z-index:2;left:50%;top:12px;width:min(74%,270px);height:380px;transform:translateX(-50%);display:block;filter:drop-shadow(0 5px 0 rgba(32,25,54,.12))}
+    .newton-study svg{display:block;width:100%;height:100%;overflow:visible;transform:scaleY(1.34);transform-origin:top center}
+    .newton-label{position:absolute;z-index:6;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;padding:5px 8px;border:1.5px solid var(--ink);border-radius:999px;background:#fff;color:var(--ink);font:900 .48rem/1 var(--display);letter-spacing:.08em;box-shadow:2px 3px 0 var(--ink)}
     .newton-apple{transform-box:fill-box;transform-origin:center;animation:newton-apple-drop 4.4s ease-in-out infinite}
     .newton-hit-spark{opacity:0;transform-box:fill-box;transform-origin:center;animation:newton-impact 4.4s ease-in-out infinite}
-    .study-side{position:absolute;z-index:5;width:64px;min-height:72px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:3px;padding:5px 3px 4px;border:1.8px solid var(--ink);border-radius:14px;background:linear-gradient(145deg,#fff 0%,#f2ebff 100%);box-shadow:4px 5px 0 var(--ink),inset 1px 1px 0 rgba(255,255,255,.95);color:var(--ink);transform-style:preserve-3d}
-    .study-side b{font:900 .43rem/1 var(--display);letter-spacing:.1em;text-align:center}
-    .study-atom-side{left:0;top:24px;transform:rotate(-8deg);animation:study-tile-float 4.6s ease-in-out infinite}
-    .mini-atom{position:relative;width:46px;height:43px;display:grid;place-items:center;perspective:300px}
+    .tree-apple{transform-box:fill-box;transform-origin:center;animation:tree-apple-glint 3.4s ease-in-out infinite}
+    .tree-apple:nth-child(2){animation-delay:-.8s}.tree-apple:nth-child(3){animation-delay:-1.6s}.tree-apple:nth-child(4){animation-delay:-2.4s}
+    .study-side{position:absolute;z-index:5;width:54px;min-height:70px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:3px;padding:5px 3px 4px;border:1.8px solid var(--ink);border-radius:14px;background:linear-gradient(145deg,#fff 0%,#f2ebff 100%);box-shadow:4px 5px 0 var(--ink),inset 1px 1px 0 rgba(255,255,255,.95);color:var(--ink);transform-style:preserve-3d;overflow:visible}
+    .study-side b{display:block;width:100%;font:900 .35rem/1.1 var(--display);letter-spacing:.04em;text-align:center;white-space:nowrap}
+    .study-atom-side{left:0;top:20px;transform:rotate(-8deg);animation:study-tile-float 4.6s ease-in-out infinite}
+    .mini-atom{position:relative;width:44px;height:41px;display:grid;place-items:center;perspective:300px}
     .mini-atom-core{width:10px;height:10px;border-radius:50%;background:var(--pink);border:1.5px solid var(--ink);box-shadow:0 0 0 3px rgba(255,22,84,.12)}
-    .mini-atom-orbit{position:absolute;left:50%;top:50%;width:41px;height:17px;border:1.5px solid var(--mint);border-radius:50%;transform:translate(-50%,-50%) rotate(-25deg);animation:mini-atom-spin 3.5s linear infinite}
-    .mini-atom-orbit.orbit-b{width:41px;height:17px;border-color:var(--pink);transform:translate(-50%,-50%) rotate(35deg);animation-direction:reverse}
-    .mini-atom-orbit.orbit-c{width:41px;height:17px;border-color:#d6a900;transform:translate(-50%,-50%) rotate(90deg);animation-duration:4.3s}
+    .mini-atom-orbit{position:absolute;left:50%;top:50%;width:40px;height:17px;border:1.5px solid var(--mint);border-radius:50%;transform:translate(-50%,-50%) rotate(-25deg);animation:mini-atom-spin 3.5s linear infinite}
+    .mini-atom-orbit.orbit-b{width:40px;height:17px;border-color:var(--pink);transform:translate(-50%,-50%) rotate(35deg);animation-direction:reverse}
+    .mini-atom-orbit.orbit-c{width:40px;height:17px;border-color:#d6a900;transform:translate(-50%,-50%) rotate(90deg);animation-duration:4.3s}
     .mini-atom-orbit:after{content:"";position:absolute;left:50%;top:-3px;width:5px;height:5px;border:1px solid var(--ink);border-radius:50%;background:var(--yellow)}
-    .study-pendulum-side{right:0;top:17px;min-height:91px;transform:rotate(7deg);animation:study-tile-float 4.8s ease-in-out infinite -1.2s}
-    .pendulum-stage{position:relative;width:47px;height:61px;border-top:3px solid var(--ink);border-radius:5px 5px 0 0;background:linear-gradient(180deg,rgba(231,220,255,.5),rgba(255,255,255,0));overflow:hidden}
+    .study-pendulum-side{right:0;top:20px;min-height:91px;transform:rotate(7deg);animation:study-tile-float 4.8s ease-in-out infinite -1.2s}
+    .pendulum-stage{position:relative;width:44px;height:60px;border-top:3px solid var(--ink);border-radius:5px 5px 0 0;background:linear-gradient(180deg,rgba(231,220,255,.5),rgba(255,255,255,0));overflow:hidden}
     .pendulum-pivot{position:absolute;z-index:2;left:calc(50% - 4px);top:-4px;width:8px;height:8px;border:1.5px solid var(--ink);border-radius:50%;background:var(--yellow)}
     .pendulum-arm{position:absolute;left:calc(50% - 1.5px);top:1px;width:3px;height:40px;background:var(--ink);border-radius:3px;transform-origin:top center;animation:pendulum-swing 1.55s ease-in-out infinite alternate}
     .pendulum-bob{position:absolute;left:50%;bottom:-8px;width:18px;height:18px;border:2px solid var(--ink);border-radius:50%;background:linear-gradient(135deg,#fff 0%,var(--pink) 75%);box-shadow:2px 3px 0 var(--ink);transform:translateX(-50%)}
-    .study-sst-side{left:0;bottom:7px;transform:rotate(6deg);animation:study-tile-float 5.1s ease-in-out infinite -.8s}
-    .sst-globe{position:relative;width:43px;height:43px;display:grid;place-items:center;overflow:hidden;border:2px solid var(--ink);border-radius:50%;background:linear-gradient(140deg,#72ddff 0%,#1188cb 72%,#2863a3 100%);box-shadow:inset -5px -4px 0 rgba(32,25,54,.14),inset 3px 3px 0 rgba(255,255,255,.6);animation:sst-globe-turn 6s linear infinite}
-    .sst-land{position:absolute;background:#00c99a;border:1px solid rgba(32,25,54,.3);border-radius:50% 35% 42% 30%;}
-    .sst-land.land-a{width:15px;height:18px;left:6px;top:5px;transform:rotate(25deg)}
-    .sst-land.land-b{width:12px;height:14px;right:5px;bottom:6px;transform:rotate(-24deg)}
-    .sst-latitude,.sst-longitude{position:absolute;inset:7px 1px;border:1px solid rgba(255,255,255,.75);border-radius:50%}
-    .sst-longitude{inset:1px 10px}
-    .study-math-side{right:0;bottom:8px;min-height:76px;transform:rotate(-6deg);animation:study-tile-float 4.3s ease-in-out infinite -2s}
-    .math-mini-stage{position:relative;width:50px;height:45px;display:flex;align-items:center;justify-content:center;gap:3px}
-    .math-pi{font:900 1.35rem/1 var(--display);color:var(--pink);text-shadow:1px 2px 0 var(--ink);animation:math-symbol-bob 2.4s ease-in-out infinite}
-    .math-sum{font:900 1rem/1 var(--display);color:#009a79;animation:math-symbol-bob 2.4s ease-in-out infinite -.8s}
-    .math-triangle{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid var(--yellow);filter:drop-shadow(1.5px 2px 0 var(--ink));animation:math-triangle-turn 4.2s ease-in-out infinite}
+    .study-sst-side{left:0;top:250px;transform:rotate(5deg);animation:study-tile-float 4.7s ease-in-out infinite -.8s}
+    .earthquake-stage{width:47px;height:43px;display:grid;place-items:center;animation:quake-shake 1.15s ease-in-out infinite}
+    .earthquake-art{width:47px;height:43px;display:block;overflow:visible}
+    .quake-buildings{transform-origin:32px 36px;animation:quake-buildings 1.15s ease-in-out infinite}
+    .quake-crack{stroke-dasharray:4 3;animation:quake-crack 1.15s linear infinite}
+    .quake-wave{transform-origin:center;animation:quake-wave 1.8s ease-out infinite}
+    .quake-wave.wave-b{animation-delay:-.9s}
+    .study-math-side{right:0;top:250px;min-height:70px;transform:rotate(-5deg);animation:study-tile-float 4.4s ease-in-out infinite -2s}
+    .trig-bridge-art{width:48px;height:43px;display:block;overflow:visible}
+    .trig-bridge-cable{stroke-dasharray:4 2;animation:bridge-cable 3.4s linear infinite}
+    .trig-bridge-deck{transform-origin:32px 31px;animation:bridge-bob 3.8s ease-in-out infinite}
+    .trig-angle{transform-origin:18px 29px;animation:trig-angle-pulse 2.1s ease-in-out infinite}
     .physics-study-scene .study-side:after{content:"";position:absolute;inset:4px;border:1px dashed rgba(32,25,54,.2);border-radius:10px;pointer-events:none}
     @keyframes mini-atom-spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
     @keyframes pendulum-swing{0%{transform:rotate(-31deg)}100%{transform:rotate(31deg)}}
-    @keyframes sst-globe-turn{0%,100%{filter:saturate(1);transform:rotate(-5deg)}50%{filter:saturate(1.25);transform:rotate(5deg)}}
-    @keyframes study-tile-float{0%,100%{translate:0 0}50%{translate:0 -6px}}
-    @keyframes math-symbol-bob{0%,100%{translate:0 2px;rotate:-5deg}50%{translate:0 -4px;rotate:6deg}}
-    @keyframes math-triangle-turn{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(18deg) scale(1.12)}}
-    @keyframes newton-apple-drop{0%,18%{transform:translate(0,0) rotate(0)}29%{transform:translate(5px,24px) rotate(20deg)}33%{transform:translate(4px,15px) rotate(-8deg)}38%{transform:translate(7px,25px) rotate(18deg)}46%{transform:translate(7px,25px) rotate(18deg)}55%{transform:translate(7px,25px) rotate(18deg);opacity:1}62%{transform:translate(0,0) rotate(0);opacity:0}70%,100%{transform:translate(0,0) rotate(0);opacity:1}}
-    @keyframes newton-impact{0%,28%,56%,100%{opacity:0;transform:scale(.45) rotate(-20deg)}32%,38%{opacity:1;transform:scale(1.15) rotate(10deg)}44%{opacity:.75;transform:scale(.9) rotate(0)}}
-    @keyframes study-aura{0%,100%{opacity:.55;scale:.95}50%{opacity:.95;scale:1.04}}
+    @keyframes study-tile-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
+    @keyframes tree-apple-glint{0%,100%{filter:brightness(1);scale:1}50%{filter:brightness(1.16);scale:1.06}}
+    @keyframes newton-apple-drop{0%,17%{transform:translate(0,0) rotate(0)}29%{transform:translate(3px,34px) rotate(18deg)}33%{transform:translate(2px,27px) rotate(-8deg)}39%{transform:translate(5px,36px) rotate(18deg)}48%,54%{transform:translate(5px,36px) rotate(18deg);opacity:1}63%{transform:translate(0,0) rotate(0);opacity:0}72%,100%{transform:translate(0,0) rotate(0);opacity:1}}
+    @keyframes newton-impact{0%,27%,53%,100%{opacity:0;transform:scale(.4) rotate(-20deg)}31%,37%{opacity:1;transform:scale(1.2) rotate(10deg)}43%{opacity:.8;transform:scale(.9) rotate(0)}}
+    @keyframes study-aura{0%,100%{opacity:.5;scale:.95}50%{opacity:.9;scale:1.04}}
+    @keyframes quake-shake{0%,100%{translate:0 0;rotate:0}15%{translate:-1px 1px;rotate:-1deg}30%{translate:1.5px -1px;rotate:1.5deg}45%{translate:-1.5px 1px;rotate:-1deg}60%{translate:1px 0;rotate:.8deg}}
+    @keyframes quake-buildings{0%,100%{translate:0 0}30%{translate:1px 0}60%{translate:-1px 1px}}
+    @keyframes quake-crack{0%,100%{opacity:.6;stroke-dashoffset:0}50%{opacity:1;stroke-dashoffset:7}}
+    @keyframes quake-wave{0%{opacity:.85;scale:.75}100%{opacity:0;scale:1.35}}
+    @keyframes bridge-cable{to{stroke-dashoffset:-12}}
+    @keyframes bridge-bob{0%,100%{translate:0 0}50%{translate:0 -1.5px}}
+    @keyframes trig-angle-pulse{0%,100%{opacity:.7;scale:.9}50%{opacity:1;scale:1.15}}
     @media(max-width:760px){
-      .physics-study-scene{top:72px;left:10px;right:10px;height:294px}
-      .newton-study{top:6px;width:min(65%,218px);height:250px}
-      .newton-label{top:2px;font-size:.43rem;padding:5px 6px}
-      .study-side{width:57px;min-height:67px;padding:4px 2px;border-radius:12px;box-shadow:3px 4px 0 var(--ink)}
-      .study-side b{font-size:.38rem}
-      .study-atom-side{top:25px;left:0}
-      .study-pendulum-side{top:19px;right:0;min-height:83px}
-      .study-sst-side{bottom:9px;left:0}
-      .study-math-side{bottom:9px;right:0;min-height:68px}
+      .physics-study-scene{top:64px;left:10px;right:10px;height:420px}
+      .newton-study{top:12px;width:min(74%,270px);height:380px}
+      .newton-label{top:0;font-size:.43rem;padding:5px 6px}
+      .study-side{width:54px;min-height:67px;padding:4px 2px;border-radius:12px;box-shadow:3px 4px 0 var(--ink)}
+      .study-side b{font-size:.34rem}
+      .study-atom-side{top:20px;left:0}
+      .study-pendulum-side{top:20px;right:0;min-height:83px}
+      .study-sst-side{top:250px;left:0}
+      .study-math-side{top:250px;right:0;min-height:68px}
       .mini-atom{width:41px;height:38px}.mini-atom-orbit,.mini-atom-orbit.orbit-b,.mini-atom-orbit.orbit-c{width:36px}
       .pendulum-stage{width:41px;height:54px}.pendulum-arm{height:35px}.pendulum-bob{width:16px;height:16px}
-      .sst-globe{width:38px;height:38px}.sst-land.land-a{width:13px;height:15px}.sst-land.land-b{width:10px;height:12px}
-      .math-mini-stage{width:44px;height:39px}.math-pi{font-size:1.16rem}.math-sum{font-size:.9rem}.math-triangle{border-left-width:10px;border-right-width:10px;border-bottom-width:19px}
+      .earthquake-stage,.earthquake-art{width:45px;height:41px}
+      .trig-bridge-art{width:46px;height:41px}
     }
-    @media(max-width:390px){.physics-study-scene{top:69px;left:8px;right:8px;height:290px}.newton-study{width:min(64%,205px);height:246px}.study-side{width:52px;min-height:62px}.study-pendulum-side{min-height:78px}.study-math-side{min-height:64px}}
+    @media(max-width:390px){
+      .physics-study-scene{top:62px;left:8px;right:8px;height:415px}
+      .newton-study{top:12px;width:min(74%,260px);height:375px}
+      .study-side{width:52px;min-height:62px}
+      .study-pendulum-side{min-height:78px}
+      .study-sst-side,.study-math-side{top:246px}
+    }
     @media(prefers-reduced-motion:reduce){.physics-study-scene *,.physics-study-scene:before{animation:none!important}}
 
 </style>
@@ -598,7 +611,7 @@
           <div class="floating-sticker sticker-c"><span>CLASSES 4–12</span> LEARNING</div>
           <div class="hero-board" data-tilt>
             <div class="board-top"><span class="tiny-chip" id="heroArtLabel">THE EV METHOD</span><span class="board-stars" aria-hidden="true">✦ ✦</span></div>
-            <div class="physics-study-scene" role="img" aria-label="Five animated study illustrations: Newton reading under a tree as an apple falls, an atom, a pendulum, a globe for social studies, and mathematics symbols">
+            <div class="physics-study-scene" role="img" aria-label="Five animated learning illustrations: Newton reading beneath an apple tree with a falling apple, a rotating atom, a swinging pendulum, an earthquake with shaking buildings for SST, and a trigonometry bridge">
               <div class="study-side study-atom-side" aria-hidden="true">
                 <div class="mini-atom"><span class="mini-atom-core"></span><span class="mini-atom-orbit"></span><span class="mini-atom-orbit orbit-b"></span><span class="mini-atom-orbit orbit-c"></span></div>
                 <b>ATOM</b>
@@ -609,7 +622,7 @@
               </div>
               <div class="newton-study" aria-hidden="true">
                 <span class="newton-label">NEWTON'S APPLE</span>
-                <svg viewBox="0 0 240 280" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                <svg viewBox="0 0 240 280" preserveAspectRatio="xMidYMin meet" xmlns="http://www.w3.org/2000/svg" role="presentation">
                   <defs>
                     <linearGradient id="newton-tree-leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9ed8b"/><stop offset="1" stop-color="#25bd82"/></linearGradient>
                     <linearGradient id="newton-coat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#866246"/><stop offset="1" stop-color="#4c342d"/></linearGradient>
@@ -624,6 +637,13 @@
                     <circle cx="37" cy="48" r="29"/><circle cx="61" cy="31" r="31"/><circle cx="89" cy="43" r="29"/><circle cx="104" cy="63" r="24"/><circle cx="74" cy="66" r="30"/><circle cx="37" cy="72" r="22"/>
                   </g>
                   <g fill="#d8ffb2" opacity=".8"><circle cx="47" cy="29" r="4"/><circle cx="76" cy="20" r="4"/><circle cx="100" cy="46" r="3.5"/><circle cx="35" cy="59" r="3"/></g>
+                  <!-- Full tree, with several apples remaining on the branches -->
+                  <g stroke="#201936" stroke-width="1.4" stroke-linejoin="round">
+                    <g class="tree-apple" transform="translate(35 44) scale(.48)"><path d="M0 -5C-6 -12 -13 -7 -12 1C-10 12 -1 17 0 17C1 17 10 12 12 1C13 -7 6 -12 0 -5Z" fill="#ff315e"/><path d="M0 -5L2 -12" fill="none" stroke="#5a3b24" stroke-width="3" stroke-linecap="round"/><path d="M2 -9Q10 -14 12 -7Q6 -4 2 -9Z" fill="#00c99a"/></g>
+                    <g class="tree-apple" transform="translate(66 31) scale(.44)"><path d="M0 -5C-6 -12 -13 -7 -12 1C-10 12 -1 17 0 17C1 17 10 12 12 1C13 -7 6 -12 0 -5Z" fill="#ff315e"/><path d="M0 -5L2 -12" fill="none" stroke="#5a3b24" stroke-width="3" stroke-linecap="round"/><path d="M2 -9Q10 -14 12 -7Q6 -4 2 -9Z" fill="#00c99a"/></g>
+                    <g class="tree-apple" transform="translate(94 48) scale(.45)"><path d="M0 -5C-6 -12 -13 -7 -12 1C-10 12 -1 17 0 17C1 17 10 12 12 1C13 -7 6 -12 0 -5Z" fill="#ff315e"/><path d="M0 -5L2 -12" fill="none" stroke="#5a3b24" stroke-width="3" stroke-linecap="round"/><path d="M2 -9Q10 -14 12 -7Q6 -4 2 -9Z" fill="#00c99a"/></g>
+                    <g class="tree-apple" transform="translate(52 68) scale(.4)"><path d="M0 -5C-6 -12 -13 -7 -12 1C-10 12 -1 17 0 17C1 17 10 12 12 1C13 -7 6 -12 0 -5Z" fill="#ff315e"/><path d="M0 -5L2 -12" fill="none" stroke="#5a3b24" stroke-width="3" stroke-linecap="round"/><path d="M2 -9Q10 -14 12 -7Q6 -4 2 -9Z" fill="#00c99a"/></g>
+                  </g>
                   <path d="M18 236 Q75 226 111 237 T222 236" fill="none" stroke="#248f68" stroke-width="4" stroke-linecap="round"/>
                   <!-- seated Newton-inspired scholar -->
                   <path d="M125 197 Q113 213 124 226 L157 230 Q167 218 152 203Z" fill="#5c483a" stroke="#201936" stroke-width="2.5"/>
@@ -669,12 +689,36 @@
                 </svg>
               </div>
               <div class="study-side study-sst-side" aria-hidden="true">
-                <div class="sst-globe"><span class="sst-land land-a"></span><span class="sst-land land-b"></span><span class="sst-latitude"></span><span class="sst-longitude"></span></div>
-                <b>SST · WORLD</b>
+                <div class="earthquake-stage">
+                  <svg class="earthquake-art" viewBox="0 0 64 50" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                    <g class="quake-buildings" stroke="#201936" stroke-width="1.6" stroke-linejoin="round">
+                      <path d="M5 36V20L17 16V36Z" fill="#d9f8ed"/><path d="M20 36V11L32 15V36Z" fill="#ffd600"/><path d="M35 36V22L47 18V36Z" fill="#ffdce8"/>
+                      <path d="M8 24L12 22M8 29L12 27M24 18L28 20M24 24L28 26M39 26L43 24M39 31L43 29" fill="none" stroke="#201936" stroke-width="1.3" stroke-linecap="round"/>
+                    </g>
+                    <path d="M2 38L17 38L22 35L27 42L32 34L37 39L44 37L49 39L62 38" fill="none" stroke="#00b991" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="quake-crack" d="M31 36L28 41L34 43L30 48" fill="none" stroke="#ff1654" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path class="quake-wave" d="M46 10Q53 16 46 22" fill="none" stroke="#ff1654" stroke-width="1.8" stroke-linecap="round"/>
+                    <path class="quake-wave wave-b" d="M51 6Q61 16 51 26" fill="none" stroke="#ff1654" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <b>SST · QUAKE</b>
               </div>
               <div class="study-side study-math-side" aria-hidden="true">
-                <div class="math-mini-stage"><span class="math-pi">π</span><span class="math-sum">∑x</span><span class="math-triangle"></span></div>
-                <b>MATHS · LOGIC</b>
+                <svg class="trig-bridge-art" viewBox="0 0 64 50" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                  <path d="M1 40L9 40L12 31L17 31L20 40M44 40L48 31L53 31L57 40L63 40" fill="#c7b1ff" stroke="#201936" stroke-width="1.6" stroke-linejoin="round"/>
+                  <path d="M6 31H59" stroke="#201936" stroke-width="3.5" stroke-linecap="round"/>
+                  <path d="M6 31H59" stroke="#ffd600" stroke-width="1.6" stroke-linecap="round"/>
+                  <g class="trig-bridge-deck" fill="none" stroke="#201936" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 31V10M50 31V10"/>
+                    <path class="trig-bridge-cable" d="M14 11Q32 38 50 11" stroke="#00b991" stroke-width="2.5"/>
+                    <path d="M21 22L21 31M28 27L28 31M36 27L36 31M43 22L43 31" stroke="#ff1654" stroke-width="1.4"/>
+                    <path d="M14 31L14 15L31 31Z" fill="#ff1654" fill-opacity=".2" stroke="#ff1654" stroke-width="1.5"/>
+                    <path class="trig-angle" d="M14 25A6 6 0 0 1 20 31" stroke="#00a881" stroke-width="2.2"/>
+                  </g>
+                  <text x="18" y="27" font-size="6" font-weight="900" fill="#201936">θ</text>
+                  <text x="36" y="19" font-size="6" font-weight="900" fill="#ff1654">h</text>
+                </svg>
+                <b>TRIG · BRIDGE</b>
               </div>
             </div>
             <div class="hero-step-row" id="heroArtSteps" aria-label="Our learning steps"><span class="hero-step-chip">UNDERSTAND</span><span class="hero-step-chip">PRACTISE</span><span class="hero-step-chip">ACHIEVE</span></div>
